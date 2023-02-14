@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect, Suspense } from 'react'
 
-function App() {
+// ** Router Import
+import Router from './router/Router'
+
+// ** Routes & Default Routes
+import { getRoutes } from './router/routes'
+
+// ** Hooks Imports
+import { useLayout } from '@hooks/useLayout'
+
+const App = () => {
+  const [allRoutes, setAllRoutes] = useState([])
+
+  // ** Hooks
+  const { layout } = useLayout()
+
+  useEffect(() => {
+    setAllRoutes(getRoutes(layout))
+  }, [layout])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Suspense fallback={null}>
+      <Router allRoutes={allRoutes} />
+    </Suspense>
+  )
 }
 
-export default App;
+export default App
