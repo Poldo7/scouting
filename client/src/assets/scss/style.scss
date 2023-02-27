@@ -1,11 +1,213 @@
-/*================================================================================
-	Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
-	Version: 2.0
-	Author: PIXINVENT
-	Author URL: http://www.themeforest.net/user/pixinvent
-================================================================================
+// ** classes
+.float-right {
+  float: right;
+}
+.float-left {
+  float: left;
+}
+.text-white {
+  color: white;
+}
+.font-weight-500 {
+  font-weight: 500;
+}
+.font-12px {
+  font-size: 12px;
+}
+.vertical-align-text-bottom {
+  vertical-align: text-bottom;
+}
+.background-purple {
+  background-color: #bb35c1 !important;
+}
+.cursor-initial {
+  cursor: initial;
+}
+.radius-5px {
+  border-radius: 5px;
+}
 
-NOTE:
-------
-PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
-WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+// ** loading spinner
+.fallback-logo {
+  max-width: 100px !important;
+}
+
+// ** tooltip
+.uncontrolled-container {
+  font-size: 14px;
+}
+.uncontrolled-container span {
+  display: block;
+}
+
+// ** filter
+.select__menu {
+  z-index: 10 !important;
+}
+.select__control .select__placeholder {
+  color: #adadad !important;
+}
+.demo-inline-spacing > * {
+  margin-top: 0.65rem !important;
+}
+.form-check-pink .form-check-input:not(:disabled):checked,
+.form-check-pink .form-check-input:not(:disabled):focus {
+  border-color: #bb35c1;
+  box-shadow: 0 2px 4px 0 rgb(187 53 193 / 40%);
+}
+.form-check-pink .form-check-input:checked {
+  border-color: #bb35c1;
+  background-color: #bb35c1;
+}
+.input-range__label--max,
+.input-range__label--min {
+  display: none;
+}
+.input-range__label--value {
+  top: -2.1rem !important;
+}
+.instagram-range,
+.tiktok-range,
+.youtube-range {
+  touch-action: none;
+}
+.input-range__label-container {
+  font-family: sans-serif !important;
+  font-size: 12px !important;
+  color: #5e5873;
+}
+.instagram-range .input-range__track--active {
+  background: #bb35c1;
+}
+.instagram-range .input-range__slider {
+  background: #bb35c1;
+  border: 1px solid #bb35c1;
+}
+.tiktok-range .input-range__track--active {
+  background: #4b4b4b;
+}
+.tiktok-range .input-range__slider {
+  background: #4b4b4b;
+  border: 1px solid #4b4b4b;
+}
+.youtube-range .input-range__track--active {
+  background: #ea5455;
+}
+.youtube-range .input-range__slider {
+  background: #ea5455;
+  border: 1px solid #ea5455;
+}
+
+// ** table influencer
+.card-action {
+  margin-bottom: 0;
+}
+.social-card {
+  max-width: 250px;
+  margin: 0 !important;
+}
+.social-card .card-title {
+  margin-bottom: 8px;
+}
+.social-card .social-link {
+  display: block;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.social-card svg {
+  vertical-align: text-top;
+  margin-right: 5px;
+}
+.action-icons svg {
+  margin-left: 10px;
+}
+.expandable-content {
+  border-bottom: 0.7px solid lightgray;
+  background-color: rgb(246, 242, 255);
+}
+.expandable-content p {
+  max-width: 500px;
+  margin-bottom: 12px;
+}
+.expandable-content .badge {
+  margin-bottom: 3px;
+}
+.expandable-content .avatar-content {
+  width: 36px !important;
+  height: auto !important;
+}
+.pagination {
+  margin-top: 20px;
+}
+.prev-item .page-link,
+.next-item .page-link {
+  border-radius: 50% !important;
+}
+.WzpaK {
+  z-index: 1;
+}
+.jmxCsa {
+  animation: append-animate 0.3s ease-in-out;
+}
+
+@keyframes append-animate {
+  from {
+    max-height: 0px;
+  }
+  to {
+    max-height: 170px;
+  }
+}
+
+@media only screen and (max-width: 991px) {
+  .expandable-content .row > div:nth-child(1),
+  .expandable-content .row > div:nth-child(2) {
+    margin-bottom: 1rem;
+  }
+
+  @keyframes append-animate {
+    from {
+      max-height: 0px;
+    }
+    to {
+      max-height: 300px;
+    }
+  }
+}
+@media only screen and (max-width: 795px) {
+  .table-header .card-title {
+    margin-bottom: 15px !important;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .expandable-content .row > div:nth-child(3) {
+    margin-bottom: 1rem;
+  }
+
+  @keyframes append-animate {
+    from {
+      max-height: 0px;
+    }
+    to {
+      max-height: 550px;
+    }
+  }
+}
+@media only screen and (max-width: 575px) {
+  .table-header .button {
+    padding: 0.786rem;
+  }
+  #control-filter {
+    margin-right: 0 !important;
+  }
+  #remove-filter {
+    width: calc(60% - 5px);
+  }
+  #control-filter {
+    width: calc(40% - 5px);
+  }
+  #add-profile {
+    width: 100%;
+    margin-top: 10px;
+  }
+}

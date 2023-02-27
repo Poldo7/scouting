@@ -23,7 +23,7 @@ var corsOptions = {
   origin: "",
 }
 if (process.env.NODE_ENV == "production") corsOptions.origin = ""
-else corsOptions.origin = "http://localhost:3000"
+else corsOptions.origin = "https://localhost:3000"
 
 app.use(cors(corsOptions))
 

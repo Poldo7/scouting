@@ -9,6 +9,9 @@ import { getRoutes } from './router/routes'
 // ** Hooks Imports
 import { useLayout } from '@hooks/useLayout'
 
+// ** Global Css
+import '@src/assets/scss/style.scss'
+
 const App = () => {
   const [allRoutes, setAllRoutes] = useState([])
 

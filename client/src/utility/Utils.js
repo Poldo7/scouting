@@ -1,4 +1,10 @@
 import { DefaultRoute } from '../router/routes'
+import Axios from "axios"
+import themeConfig from "@configs/themeConfig"
+
+//hash crypt package
+var bcrypt = require("bcryptjs")
+var randomString = require("randomstring")
 
 // ** Checks if an object is empty (returns boolean)
 export const isObjEmpty = obj => Object.keys(obj).length === 0
@@ -46,12 +52,89 @@ export const formatDateToMonthShort = (value, toTimeForCurrentDay = true) => {
 }
 
 /**
- ** Return if user is logged in
- ** This is completely up to you and how you want to store the token in your frontend application
- *  ? e.g. If you are using cookies to store the application please update this function
+ * verify the token validity
+ * @param {*} user from localstorage
+ * @returns promise of axios post verify token
  */
-export const isUserLoggedIn = () => localStorage.getItem('userData')
-export const getUserData = () => JSON.parse(localStorage.getItem('userData'))
+export async function verifyToken(user) {
+  let promise = await Axios.post(themeConfig.app.serverUrl + "verifyToken", {
+    id_account: user.id_account,
+    token: user.token,
+  }).then((response) => {
+    // check if token is valid
+    if (response.data) {
+      return true
+    } else {
+      return false
+    }
+  })
+  return promise
+}
+/**
+ * send a new access token to server and store it on the browser
+ * @param {*} user from localstorage
+ * @returns promise of axios post store token
+ */
+export async function storeNewToken(user) {
+  const newToken = randomString.generate(50)
+  let promise = await Axios.post(themeConfig.app.serverUrl + "storeToken", {
+    id_account: user.id_account,
+    token: newToken,
+  }).then((response) => {
+    // check if the token was stored correctly
+    if (response.data === "ok") {
+      //set localStorage
+      user.token = bcrypt.hashSync(newToken, 6)
+      localStorage.setItem("user", JSON.stringify(user))
+      //set sessionStorage
+      sessionStorage.setItem("isTokenValid", true)
+      console.log("successo")
+      return true // ** login correctly
+    }
+    return false // ** error trying to update the token
+  })
+  return promise
+}
+/**
+ * check if data saved in the localstoraga are valid for get the access
+ * @returns true or false, based on the login status
+ */
+export async function isUserLoggedIn() {
+  try {
+    //verify localStorage
+    var user = JSON.parse(localStorage.getItem("user"))
+    if (
+      user === null ||
+      user.id_account === null
+    )
+      return false
+    //console.log(user)
+    var result = false
+    //verify token validity
+    await verifyToken(user).then(function (isTokenValid) {
+      if (isTokenValid !== false) {
+        //verify session validity
+        var isSessionValid = sessionStorage.getItem("isTokenValid")
+        console.log("isSessionValid: " + isSessionValid)
+        if (isSessionValid === null || !isSessionValid) {
+          //update token and session
+          storeNewToken(user).then(function (isStored) {
+            if (isStored) {
+              console.log("token updated")
+            } else {
+              console.log("error trying to update the token")
+            }
+          })
+        }
+        result = isTokenValid
+      }
+    })
+    return result
+  } catch {
+    return false
+  }
+}
+export const getUserData = () => localStorage.getItem("user")
 
 /**
  ** This function is used for demo purpose route navigation

@@ -4,7 +4,10 @@
 const themeConfig = {
   app: {
     appName: 'Vuexy',
-    appLogoImage: require('@src/assets/images/logo/logo.svg').default
+    appLogoImage: require('@src/assets/images/logo/logo.png').default,
+    baseUrl: "",
+    clientUrl: "",
+    serverUrl: "",
   },
   layout: {
     isRTL: false,
@@ -13,12 +16,12 @@ const themeConfig = {
     type: 'vertical', // vertical, horizontal
     contentWidth: 'boxed', // full, boxed
     menu: {
-      isHidden: false,
+      isHidden: true,
       isCollapsed: false
     },
     navbar: {
       // ? For horizontal menu, navbar type will work for navMenu type
-      type: 'floating', // static , sticky , floating, hidden
+      type: 'hidden', // static , sticky , floating, hidden
       backgroundColor: 'white' // BS color options [primary, success, etc]
     },
     footer: {
@@ -29,5 +32,16 @@ const themeConfig = {
     toastPosition: 'top-right'
   }
 }
+
+if (process.env.NODE_ENV == "production") {
+  themeConfig.app.baseUrl = ""
+  themeConfig.app.clientUrl = ""
+  themeConfig.app.serverUrl = ""
+} else {
+  themeConfig.app.baseUrl = "http://localhost/scouting/client/"
+  themeConfig.app.clientUrl = "https://localhost:3000/"
+  themeConfig.app.serverUrl = "http://localhost:9000/"
+}
+
 
 export default themeConfig

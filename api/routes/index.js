@@ -1,8 +1,14 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-const controller = require("../controllers/index.js")
+const account = require("../controllers/account.js");
+const influencer = require("../controllers/influencer.js");
 
-/* GET home page. */
-router.get('/testAPI', controller.testAPI);
+//** ACCOUNT */
+router.post("/login", account.login);
+router.post("/storeToken", account.storeToken);
+router.post("/verifyToken", account.verifyToken);
+
+//** INFLUENCER */
+router.post("/getInfluencers", influencer.getInfluencers);
 
 module.exports = router;
