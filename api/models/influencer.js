@@ -3,37 +3,33 @@ const moment = require("moment")
 // constructor
 const Influencer = function (params) {
   this.id_influencer = params.id_influencer
+  this.influencer_data = params.influencer_data
+  this.tag = params.tag
 }
 
 Influencer.getInfluencers = (data, result) => {
-  console.log(data)
   sql.query(
-    "SELECT influencer.*, GROUP_CONCAT(influencer.tag) interessi FROM ( \
-        SELECT DISTINCT \
-            influencer.*, scrape_ig_last.data_scrape as last_scrape_ig, scrape_ig_last.esito as esito_ig, scrape_ig_last.utente_trovato as utente_trovato_ig, \
-            scrape_ig_valid.follower_ig, scrape_ig_valid.engagement_ig, scrape_ig_valid.data_scrape as valid_scrape_ig, \
-            scrape_tt_last.data_scrape as last_scrape_tt, scrape_tt_last.esito as esito_tt, scrape_tt_last.utente_trovato as utente_trovato_tt, \
-            scrape_tt_valid.follower_tt, scrape_tt_valid.likes_tt, scrape_tt_valid.data_scrape as valid_scrape_tt, \
-            scrape_yt_last.data_scrape as last_scrape_yt, scrape_yt_last.esito as esito_yt, scrape_yt_last.utente_trovato as utente_trovato_yt, \
-            scrape_yt_valid.iscritti_yt, scrape_yt_valid.data_scrape as valid_scrape_yt, \
-            tag.nome as tag \
-        FROM influencer \
-            LEFT JOIN scrape_ig as scrape_ig_last ON influencer.id_influencer = scrape_ig_last.id_influencer \
-                AND scrape_ig_last.data_scrape = (SELECT MAX(data_scrape) from scrape_ig as scrape_ig2 WHERE scrape_ig2.id_influencer=influencer.id_influencer) \
-            LEFT JOIN scrape_ig as scrape_ig_valid ON influencer.id_influencer = scrape_ig_valid.id_influencer \
-                AND scrape_ig_valid.data_scrape = (SELECT MAX(data_scrape) from scrape_ig as scrape_ig2 WHERE scrape_ig2.esito = 1 AND scrape_ig2.utente_trovato = 1 AND scrape_ig2.id_influencer=influencer.id_influencer) \
-            LEFT JOIN scrape_tt as scrape_tt_last ON influencer.id_influencer = scrape_tt_last.id_influencer \
-                AND scrape_tt_last.data_scrape = (SELECT MAX(data_scrape) from scrape_tt as scrape_tt2 WHERE scrape_tt2.id_influencer=influencer.id_influencer) \
-            LEFT JOIN scrape_tt as scrape_tt_valid ON influencer.id_influencer = scrape_tt_valid.id_influencer \
-                AND scrape_tt_valid.data_scrape = (SELECT MAX(data_scrape) from scrape_tt as scrape_tt2 WHERE scrape_tt2.esito = 1 AND scrape_tt2.utente_trovato = 1 AND scrape_tt2.id_influencer=influencer.id_influencer) \
-            LEFT JOIN scrape_yt as scrape_yt_last on influencer.id_influencer = scrape_yt_last.id_influencer \
-                AND scrape_yt_last.data_scrape = (SELECT MAX(data_scrape) from scrape_yt as scrape_yt2 WHERE scrape_yt2.id_influencer=influencer.id_influencer) \
-            LEFT JOIN scrape_yt as scrape_yt_valid ON influencer.id_influencer = scrape_yt_valid.id_influencer \
-                AND scrape_yt_valid.data_scrape = (SELECT MAX(data_scrape) from scrape_yt as scrape_yt2 WHERE scrape_yt2.esito = 1 AND scrape_yt2.utente_trovato = 1 AND scrape_yt2.id_influencer=influencer.id_influencer) \
-            LEFT JOIN tag_influencer ON influencer.id_influencer = tag_influencer.id_influencer \
-            LEFT JOIN tag ON tag_influencer.id_tag = tag.id_tag \
-    ) as influencer \
-    GROUP BY influencer.id_influencer \
+    "SELECT DISTINCT \
+        influencer.*, scrape_ig_last.data_scrape as last_scrape_ig, scrape_ig_last.esito as esito_ig, scrape_ig_last.utente_trovato as utente_trovato_ig, \
+        scrape_ig_valid.follower_ig, scrape_ig_valid.engagement_ig, scrape_ig_valid.data_scrape as valid_scrape_ig, \
+        scrape_tt_last.data_scrape as last_scrape_tt, scrape_tt_last.esito as esito_tt, scrape_tt_last.utente_trovato as utente_trovato_tt, \
+        scrape_tt_valid.follower_tt, scrape_tt_valid.likes_tt, scrape_tt_valid.data_scrape as valid_scrape_tt, \
+        scrape_yt_last.data_scrape as last_scrape_yt, scrape_yt_last.esito as esito_yt, scrape_yt_last.utente_trovato as utente_trovato_yt, \
+        scrape_yt_valid.iscritti_yt, scrape_yt_valid.data_scrape as valid_scrape_yt \
+    FROM influencer \
+        LEFT JOIN scrape_ig as scrape_ig_last ON influencer.id_influencer = scrape_ig_last.id_influencer \
+            AND scrape_ig_last.data_scrape = (SELECT MAX(data_scrape) from scrape_ig as scrape_ig2 WHERE scrape_ig2.id_influencer=influencer.id_influencer) \
+        LEFT JOIN scrape_ig as scrape_ig_valid ON influencer.id_influencer = scrape_ig_valid.id_influencer \
+            AND scrape_ig_valid.data_scrape = (SELECT MAX(data_scrape) from scrape_ig as scrape_ig2 WHERE scrape_ig2.esito = 1 AND scrape_ig2.utente_trovato = 1 AND scrape_ig2.id_influencer=influencer.id_influencer) \
+        LEFT JOIN scrape_tt as scrape_tt_last ON influencer.id_influencer = scrape_tt_last.id_influencer \
+            AND scrape_tt_last.data_scrape = (SELECT MAX(data_scrape) from scrape_tt as scrape_tt2 WHERE scrape_tt2.id_influencer=influencer.id_influencer) \
+        LEFT JOIN scrape_tt as scrape_tt_valid ON influencer.id_influencer = scrape_tt_valid.id_influencer \
+            AND scrape_tt_valid.data_scrape = (SELECT MAX(data_scrape) from scrape_tt as scrape_tt2 WHERE scrape_tt2.esito = 1 AND scrape_tt2.utente_trovato = 1 AND scrape_tt2.id_influencer=influencer.id_influencer) \
+        LEFT JOIN scrape_yt as scrape_yt_last on influencer.id_influencer = scrape_yt_last.id_influencer \
+            AND scrape_yt_last.data_scrape = (SELECT MAX(data_scrape) from scrape_yt as scrape_yt2 WHERE scrape_yt2.id_influencer=influencer.id_influencer) \
+        LEFT JOIN scrape_yt as scrape_yt_valid ON influencer.id_influencer = scrape_yt_valid.id_influencer \
+            AND scrape_yt_valid.data_scrape = (SELECT MAX(data_scrape) from scrape_yt as scrape_yt2 WHERE scrape_yt2.esito = 1 AND scrape_yt2.utente_trovato = 1 AND scrape_yt2.id_influencer=influencer.id_influencer) \
+    WHERE influencer.data_eliminazione IS NULL \
     ORDER BY influencer.data_inserimento",
     (err, res) => {
       if (err) {
@@ -67,7 +63,7 @@ const formatInfluencersData = (data) => {
 
     // ** FORMAT ETA'
     if (influencer.eta) {
-      let eta = influencer.eta.split("-")
+      let eta = influencer.eta.split("~")
       if (eta.length > 1) {
         data[i].eta_min = eta[0]
         data[i].eta_max = eta[1]
@@ -77,8 +73,8 @@ const formatInfluencersData = (data) => {
     // ** FILTRI
 
     //compone l'array degli interessi e delle regioni (da utilizzare nei filtri)
-    if (influencer.interessi) tagList = tagList.concat(influencer.interessi.split(","))
-    if (influencer.regione) regionList = regionList.concat(influencer.regione.split(","))
+    if (influencer.interessi) tagList = tagList.concat(influencer.interessi.split(", "))
+    if (influencer.regione) regionList = regionList.concat(influencer.regione.split(", "))
     //cerca il profilo con più follower instagram
     if (influencer.follower_ig > followerMaxIG) followerMaxIG = influencer.follower_ig
     //cerca il profilo con più engagement rate di instagram
@@ -144,6 +140,9 @@ const formatInfluencersData = (data) => {
   //remove tag and region duplicates
   tagList = [...new Set(tagList)]
   regionList = [...new Set(regionList)]
+  //order tag and region arrays
+  regionList.sort((a, b) => a.localeCompare(b))
+  tagList.sort((a, b) => a.localeCompare(b))
   // map tag and region arrays into select options
   let tagOptions = tagList.map((el) => ({ value: el, label: el }))
   let regionOptions = regionList.map((el) => ({ value: el, label: el }))
@@ -164,6 +163,90 @@ const formatInfluencersData = (data) => {
     influencerNotScraped: influencerNotScraped,
     influencerNotFound: influencerNotFound,
   }
+}
+
+Influencer.deleteInfluencer = (data, result) => {
+  sql.query("UPDATE influencer SET data_eliminazione = NOW() WHERE id_influencer = ?", [data.id_influencer], (err, res) => {
+    if (err) {
+      console.log("error: ", err)
+      result(null, err)
+    } else {
+      result(null, res)
+    }
+  })
+}
+
+Influencer.updateInfluencer = (data, result) => {
+  let profile = data.influencer_data
+  sql.query(
+    "UPDATE influencer SET username_ig = ?, username_tt = ?, username_yt = ?, nome = ?, interessi=?, regione = ?, citta = ?, eta = ?, contatti = ?, stato = ? \
+    WHERE id_influencer = ?",
+    [
+      profile.username_ig,
+      profile.username_tt,
+      profile.username_yt,
+      profile.nome,
+      profile.interessi,
+      profile.regione,
+      profile.citta,
+      profile.eta,
+      profile.contatti,
+      profile.stato,
+      profile.id_influencer,
+    ],
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err)
+        result(null, err)
+      } else {
+        //TO-DO: if there's new scrape (is_new_scrape_ig, is_new_scrape_tt, is_new_scrape_yt), insert the new scrape data respective tables
+        result(null, res)
+      }
+    }
+  )
+}
+
+Influencer.getLuoghi = (data, result) => {
+  sql.query("SELECT * FROM luoghi_italiani", [], (err, res) => {
+    if (err) {
+      console.log("error: ", err)
+      result(null, err)
+    } else {
+      // map region and cities arrays into select options
+      let regioni = res.map((el) => ({ value: el.regione, label: el.regione }))
+      regioni = [...new Map(regioni.map((r) => [r.value, r])).values()]
+      regioni.sort((a, b) => a.value.localeCompare(b.value))
+      let citta = res.map((el) => ({ value: el.provincia, label: el.provincia, regione: el.regione }))
+      result(null, {
+        regioni: regioni,
+        citta: citta,
+      })
+    }
+  })
+}
+
+Influencer.getTag = (data, result) => {
+  sql.query("SELECT * FROM tag", [], (err, res) => {
+    if (err) {
+      console.log("error: ", err)
+      result(null, err)
+    } else {
+      // map tag array into select options
+      let tag = res.map((el) => ({ value: el.nome, label: el.nome }))
+      result(null, tag)
+    }
+  })
+}
+
+Influencer.createTag = (data, result) => {
+  sql.query("INSERT INTO tag (nome) VALUES (?)", [data.tag], (err, res) => {
+    if (err) {
+      console.log("error: ", err)
+      result(null, err)
+    } else {
+      result(null, data.tag)
+    }
+  })
 }
 
 const increaseRangeMax = (max) => {

@@ -1,15 +1,14 @@
 import { selectThemeColors } from "@utils"
 import React, { useEffect } from "react"
 import { Instagram, Music, X, Youtube } from "react-feather"
-import { CardBody, Col, Collapse, Input, InputGroup, InputGroupText, Label, Row } from "reactstrap"
-// ** Table columns & Expandable Data
-import { abbreviaNumero } from "./data"
+import { Button, CardBody, Col, Collapse, Input, InputGroup, InputGroupText, Label, Row } from "reactstrap"
 
 // ** Third Party Components
 import InputRange from "react-input-range"
 import "react-input-range/lib/css/index.css"
 import Select from "react-select"
 import makeAnimated from "react-select/animated"
+import { abbreviaNumero } from "./utils"
 
 const animatedComponents = makeAnimated()
 
@@ -244,11 +243,12 @@ const Filters = (props) => {
                 className="react-select"
                 classNamePrefix="select"
                 placeholder="Digita per cercare..."
+                noOptionsMessage={() => "Nessun risultato"}
                 id="interessi"
               />
             </Col>
             <Col className="mb-2" xl="4" md="6" sm="12">
-              <Label className="form-label" for="interessi">
+              <Label className="form-label" for="social">
                 Social{" "}
                 <i>
                   (<u>deve possedere tutti quelli selezionati</u>)
@@ -318,7 +318,7 @@ const Filters = (props) => {
                 <InputRange
                   maxValue={followerMaxIG}
                   minValue={0}
-                  step={1000}
+                  step={5000}
                   value={{ min: filterFollowerMinIG, max: filterFollowerMaxIG }}
                   formatLabel={(value) => abbreviaNumero(value)}
                   onChange={(value) => {
@@ -362,7 +362,7 @@ const Filters = (props) => {
                 <InputRange
                   maxValue={followerMaxTT}
                   minValue={0}
-                  step={1000}
+                  step={5000}
                   value={{ min: filterFollowerMinTT, max: filterFollowerMaxTT }}
                   formatLabel={(value) => abbreviaNumero(value)}
                   onChange={(value) => {
@@ -384,7 +384,7 @@ const Filters = (props) => {
                 <InputRange
                   maxValue={subscriberMaxYT}
                   minValue={0}
-                  step={1000}
+                  step={5000}
                   value={{ min: filterSubscriberMinYT, max: filterSubscriberMaxYT }}
                   formatLabel={(value) => abbreviaNumero(value)}
                   onChange={(value) => {
@@ -414,6 +414,7 @@ const Filters = (props) => {
                 className="react-select"
                 classNamePrefix="select"
                 placeholder="Digita per cercare..."
+                noOptionsMessage={() => "Nessun risultato"}
                 id="regione"
               />
             </Col>
@@ -440,7 +441,8 @@ const Filters = (props) => {
                 className="react-select"
                 classNamePrefix="select"
                 placeholder="Seleziona"
-                id="interessi"
+                noOptionsMessage={() => "Nessun risultato"}
+                id="eta"
               />
             </Col>
             <Col className="mb-2" xl="4" md="6" sm="12">

@@ -17,6 +17,9 @@
 .vertical-align-text-bottom {
   vertical-align: text-bottom;
 }
+.vertical-align-sub {
+  vertical-align: sub;
+}
 .background-purple {
   background-color: #bb35c1 !important;
 }
@@ -25,6 +28,12 @@
 }
 .radius-5px {
   border-radius: 5px;
+}
+
+// ** swal ovveride
+.swal2-html-container {
+  font-size: 17px !important;
+  margin-bottom: 12px;
 }
 
 // ** loading spinner
@@ -97,6 +106,15 @@
   background: #ea5455;
   border: 1px solid #ea5455;
 }
+.gray-label {
+  color: #6e6b7b;
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-bottom: 3px !important;
+}
+textarea.form-control {
+  padding: 0.65rem 1rem !important;
+}
 
 // ** table influencer
 .card-action {
@@ -118,8 +136,9 @@
   vertical-align: text-top;
   margin-right: 5px;
 }
-.action-icons svg {
-  margin-left: 10px;
+.action-icons button {
+  margin-left: 3px;
+  padding: 3px !important;
 }
 .expandable-content {
   border-bottom: 0.7px solid lightgray;
@@ -155,8 +174,13 @@
     max-height: 0px;
   }
   to {
-    max-height: 170px;
+    max-height: 182px;
   }
+}
+
+// ** social tab
+.social-container {
+  display: flex;
 }
 
 @media only screen and (max-width: 991px) {
@@ -189,25 +213,34 @@
       max-height: 0px;
     }
     to {
-      max-height: 550px;
+      max-height: 560px;
     }
   }
 }
-@media only screen and (max-width: 575px) {
-  .table-header .button {
+@media only screen and (max-width: 640px) {
+  .table-header button {
     padding: 0.786rem;
+  }
+  #table-action-container {
+    width: 100%;
   }
   #control-filter {
     margin-right: 0 !important;
+    width: calc(45% - 5px);
   }
   #remove-filter {
-    width: calc(60% - 5px);
-  }
-  #control-filter {
-    width: calc(40% - 5px);
+    width: calc(55% - 5px);
   }
   #add-profile {
     width: 100%;
     margin-top: 10px;
+  }
+}
+@media only screen and (max-width: 520px) {
+  .social-container {
+    display: block;
+  }
+  .social-container > div:nth-child(2) {
+    margin-top: 7px;
   }
 }

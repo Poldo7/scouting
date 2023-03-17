@@ -1,62 +1,62 @@
 // ** React Imports
-import { Fragment, lazy } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Fragment, lazy } from "react"
+import { Navigate } from "react-router-dom"
 // ** Layouts
-import BlankLayout from '@layouts/BlankLayout'
-import VerticalLayout from '@src/layouts/VerticalLayout'
-import HorizontalLayout from '@src/layouts/HorizontalLayout'
-import LayoutWrapper from '@src/@core/layouts/components/layout-wrapper'
+import BlankLayout from "@layouts/BlankLayout"
+import VerticalLayout from "@src/layouts/VerticalLayout"
+import HorizontalLayout from "@src/layouts/HorizontalLayout"
+import LayoutWrapper from "@src/@core/layouts/components/layout-wrapper"
 
 // ** Route Components
-import PublicRoute from '@components/routes/PublicRoute'
+import PublicRoute from "@components/routes/PublicRoute"
 
 // ** Utils
-import { isObjEmpty } from '@utils'
+import { isObjEmpty } from "@utils"
 
 const getLayout = {
   blank: <BlankLayout />,
   vertical: <VerticalLayout />,
-  horizontal: <HorizontalLayout />
+  horizontal: <HorizontalLayout />,
 }
 
 // ** Document title
-const TemplateTitle = '%s - Domini Scouting'
+const TemplateTitle = "%s - Domini Scouting"
+
+const Home = lazy(() => import("../../views/index"))
+const Login = lazy(() => import("../../views/Login"))
+const Error = lazy(() => import("../../views/Error"))
 
 // ** Default Route
-const DefaultRoute = '/home'
-
-const Home = lazy(() => import('../../views/Home'))
-const Login = lazy(() => import('../../views/Login'))
-const Error = lazy(() => import('../../views/Error'))
+const DefaultRoute = "/home"
 
 // ** Merge Routes
 const Routes = [
   {
-    path: '/',
-    index: true,
-    element: <Navigate replace to={DefaultRoute} />
-  },
-  {
-    path: '/login',
+    path: "/login",
     element: <Login />,
     meta: {
-      layout: 'blank'
-    }
+      layout: "blank",
+    },
   },
   {
-    path: '/home',
-    element: <Home />
+    path: "/home",
+    element: <Home />,
   },
   {
-    path: '/error',
+    path: "/error",
     element: <Error />,
     meta: {
-      layout: 'blank'
-    }
-  }
+      layout: "blank",
+    },
+  },
+  {
+    path: "/",
+    index: true,
+    element: <Navigate replace to={DefaultRoute} />,
+  },
 ]
 
-const getRouteMeta = route => {
+const getRouteMeta = (route) => {
   if (isObjEmpty(route.element.props)) {
     if (route.meta) {
       return { routeMeta: route.meta }
@@ -71,7 +71,7 @@ const MergeLayoutRoutes = (layout, defaultLayout) => {
   const LayoutRoutes = []
 
   if (Routes) {
-    Routes.filter(route => {
+    Routes.filter((route) => {
       let isBlank = false
       // ** Checks if Route layout or Default layout matches current layout
       if (
@@ -82,7 +82,7 @@ const MergeLayoutRoutes = (layout, defaultLayout) => {
 
         // ** Check for public or private route
         if (route.meta) {
-          route.meta.layout === 'blank' ? (isBlank = true) : (isBlank = false)
+          route.meta.layout === "blank" ? (isBlank = true) : (isBlank = false)
         }
         if (route.element) {
           const Wrapper =
@@ -108,19 +108,19 @@ const MergeLayoutRoutes = (layout, defaultLayout) => {
   return LayoutRoutes
 }
 
-const getRoutes = layout => {
-  const defaultLayout = layout || 'vertical'
-  const layouts = ['vertical', 'horizontal', 'blank']
+const getRoutes = (layout) => {
+  const defaultLayout = layout || "vertical"
+  const layouts = ["vertical", "horizontal", "blank"]
 
   const AllRoutes = []
 
-  layouts.forEach(layoutItem => {
+  layouts.forEach((layoutItem) => {
     const LayoutRoutes = MergeLayoutRoutes(layoutItem, defaultLayout)
 
     AllRoutes.push({
-      path: '/',
+      path: "/",
       element: getLayout[layoutItem] || getLayout[defaultLayout],
-      children: LayoutRoutes
+      children: LayoutRoutes,
     })
   })
   return AllRoutes
