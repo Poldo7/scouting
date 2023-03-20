@@ -21,7 +21,6 @@ exports.login = (req, res) => {
   })
 }
 
-
 exports.verifyToken = (req, res) => {
   // Validate request
   if (!req.body) {

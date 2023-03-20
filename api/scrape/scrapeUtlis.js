@@ -1,4 +1,6 @@
 //import { PlaywrightCrawler, ProxyConfiguration } from "crawlee"
+
+var { PlaywrightCrawler, ProxyConfiguration } = require("crawlee")
 //import { setTimeout } from "timers/promises"
 
 /*const router_ig = createPlaywrightRouter()

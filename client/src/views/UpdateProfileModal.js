@@ -7,8 +7,6 @@ import themeConfig from "@configs/themeConfig"
 import Swal from "sweetalert2"
 import ProfileForm from "./form/ProfileForm"
 
-import { scrapeProfiles } from "./scrapeUtlis"
-
 const UpdateProfileModal = (props) => {
   const { profile, setProfile, isOpen, setIsOpen, regions, cities, tag, fetchProfiles } = props
 
@@ -87,20 +85,28 @@ const UpdateProfileModal = (props) => {
   // ** verify social
   const verifySocial = () => {
     console.log("verifying social: ", profile)
-    scrapeProfiles(profile)
-    handleMessage("success", "Verifica completata", "Controlla che i dati raccolti siano corretti")
-    setIsSocialChanged(false)
-    let deep_copy = JSON.parse(JSON.stringify(profile))
-    //
-    //ESEMPIO per instagram: si aggiorna i dati dello scrape e si contrassegnamo come nuovi, così che dopo gli inserisca nel db
-    //
-    // ****
-    //deep_copy.follower_ig = 1000
-    //deep_copy.engagement_ig = 4
-    //deep_copy.is_new_scrape_ig = true
-    // ****
-    //
-    setProfile(deep_copy)
+
+    Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: profile })
+      .then((res) => {
+        if (res.data) {
+          handleMessage("success", "Verifica completata", "Controlla che i dati raccolti siano corretti")
+          setIsSocialChanged(false)
+          let deep_copy = JSON.parse(JSON.stringify(profile))
+          //
+          //ESEMPIO per instagram: si aggiorna i dati dello scrape e si contrassegnamo come nuovi, così che dopo gli inserisca nel db
+          //
+          // ****
+          //deep_copy.follower_ig = 1000
+          //deep_copy.engagement_ig = 4
+          //deep_copy.is_new_scrape_ig = true
+          // ****
+          //
+          setProfile(deep_copy)
+        }
+      })
+      .catch((err) => {
+        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+      })
   }
 
   const handleMessage = (icon, title, text = null, html = null) => {
