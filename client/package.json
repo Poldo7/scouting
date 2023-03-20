@@ -1,6 +1,10 @@
 {
-  "name": "vuexy-react-admin-dashboard",
+  "name": "domini-scouting",
   "version": "8.0.0",
+  "engines": {
+    "npm": "8.19.3",
+    "node": "16.19.1"
+  },
   "private": true,
   "dependencies": {
     "@casl/ability": "5.2.2",
@@ -21,6 +25,7 @@
     "apexcharts-clevision": "3.28.3",
     "axios": "^0.24.0",
     "axios-mock-adapter": "1.19.0",
+    "babel-eslint": "^10.1.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "5.1.0",
     "bs-stepper": "1.7.0",
