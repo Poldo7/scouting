@@ -36,7 +36,7 @@ const themeConfig = {
 if (process.env.NODE_ENV == "production") {
   themeConfig.app.baseUrl = "https://main.dpwj0vvx20lw9.amplifyapp.com"
   themeConfig.app.clientUrl = "https://main.dpwj0vvx20lw9.amplifyapp.com"
-  themeConfig.app.serverUrl = "https://main.d1k69unoheaudx.amplifyapp.com"
+  themeConfig.app.serverUrl = "http://node-express-env.eba-ecfbkmpz.eu-south-1.elasticbeanstalk.com"
 } else {
   themeConfig.app.baseUrl = "http://localhost/scouting/client/"
   themeConfig.app.clientUrl = "https://localhost:3000/"
