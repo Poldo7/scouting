@@ -3,17 +3,19 @@ var dbConfig = {
   USER: "",
   PASSWORD: "",
   DB: "",
+  PORT: "",
 }
 if (process.env.NODE_ENV == "production") {
-  dbConfig.HOST = ""
-  dbConfig.USER = ""
-  dbConfig.PASSWORD = ""
-  dbConfig.DB = ""
+  dbConfig.HOST = process.env.RDS_HOSTNAME
+  dbConfig.USER = process.env.RDS_USERNAME
+  dbConfig.PASSWORD = process.env.RDS_PASSWORD
+  dbConfig.PORT = process.env.RDS_PORT
+  dbConfig.DB = "scouting-db"
 } else {
-  ;(dbConfig.HOST = "localhost"),
-    (dbConfig.USER = "root"),
-    (dbConfig.PASSWORD = "root"),
-    (dbConfig.DB = "scouting")
+  dbConfig.HOST = "localhost"
+  dbConfig.USER = "root"
+  dbConfig.PASSWORD = "root"
+  dbConfig.DB = "scouting"
 }
 
 module.exports = dbConfig
