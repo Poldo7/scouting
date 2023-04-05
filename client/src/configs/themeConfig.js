@@ -34,8 +34,8 @@ const themeConfig = {
 }
 
 if (process.env.NODE_ENV == "production") {
-  themeConfig.app.baseUrl = "https://main.dpwj0vvx20lw9.amplifyapp.com/"
-  themeConfig.app.clientUrl = "https://main.dpwj0vvx20lw9.amplifyapp.com/"
+  themeConfig.app.baseUrl = "https://scouting.dominiagency.com/"
+  themeConfig.app.clientUrl = "https://scouting.dominiagency.com/"
   themeConfig.app.serverUrl = "https://scouting.api.dominiagency.com/"
 } else {
   themeConfig.app.baseUrl = "http://localhost/scouting/client/"
