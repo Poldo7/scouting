@@ -98,7 +98,7 @@ const UpdateProfileModal = (props) => {
           deep_copy.is_new_scrape_ig = true
 
           setProfile(deep_copy)
-        }
+        } else handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
       })
       .catch((err) => {
         handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
