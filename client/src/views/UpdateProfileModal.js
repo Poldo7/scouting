@@ -83,25 +83,19 @@ const UpdateProfileModal = (props) => {
   }
 
   // ** verify social
-  const verifySocial = () => {
-    console.log("verifying social: ", profile)
-
-    Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: profile })
+  const verifySocial = async () => {
+    Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
       .then((res) => {
         console.log(res)
         if (res.data) {
           handleMessage("success", "Verifica completata", "Controlla che i dati raccolti siano corretti")
           setIsSocialChanged(false)
           let deep_copy = JSON.parse(JSON.stringify(profile))
-          //
-          //ESEMPIO per instagram: si aggiorna i dati dello scrape e si contrassegnamo come nuovi, così che dopo gli inserisca nel db
-          //
-          // ****
-          //deep_copy.follower_ig = 1000
-          //deep_copy.engagement_ig = 4
-          //deep_copy.is_new_scrape_ig = true
-          // ****
-          //
+
+          deep_copy.follower_ig = res.data[0].follower
+          deep_copy.engagement_ig = res.data[0].engagement
+          deep_copy.is_new_scrape_ig = true
+
           setProfile(deep_copy)
         }
       })
@@ -133,11 +127,13 @@ const UpdateProfileModal = (props) => {
           <Button onClick={() => updateProfileData()} color="primary" className="float-right" disabled={isSocialChanged}>
             Aggiorna
           </Button>
-          {isSocialChanged && (
-            <Button onClick={() => verifySocial()} color="primary" className="float-right me-1">
+          {
+            /* commented for dev debug 
+              //isSocialChanged && 
+            */ <Button onClick={() => verifySocial()} color="primary" className="float-right me-1">
               Verifica social
             </Button>
-          )}
+          }
         </ModalBody>
       </Modal>
     </>
