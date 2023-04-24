@@ -87,8 +87,9 @@ const UpdateProfileModal = (props) => {
     Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
       .then((res) => {
         console.log(res)
-        if (res.data) {
-          handleMessage("success", "Verifica completata", "Controlla che i dati raccolti siano corretti")
+        if (res.data && res.data.status != "failed") {
+          if (res.data.status == "success") handleMessage("success", "Verifica completata", "Controlla che i dati raccolti siano corretti")
+          else handleMessage("info", "Rieseguire la verifica", "La verifica di alcuni profili e fallita, ricontrolla i dati")
           setIsSocialChanged(false)
           let deep_copy = JSON.parse(JSON.stringify(profile))
 
