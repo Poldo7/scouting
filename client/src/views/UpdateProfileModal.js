@@ -84,25 +84,26 @@ const UpdateProfileModal = (props) => {
 
   // ** verify social
   const verifySocial = async () => {
-    Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
-      .then((res) => {
-        console.log(res)
-        if (res.data && res.data.status != "failed") {
-          if (res.data.status == "success") handleMessage("success", "Verifica completata", "Controlla che i dati raccolti siano corretti")
-          else handleMessage("info", "Rieseguire la verifica", "La verifica di alcuni profili e fallita, ricontrolla i dati")
-          setIsSocialChanged(false)
-          let deep_copy = JSON.parse(JSON.stringify(profile))
+    if (originalUsernameIG != profile.username_ig) {
+      Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
+        .then((res) => {
+          console.log(res)
+          if (res.data && res.data.status == "success") {
+            handleMessage("success", "Verifica Instagram completata", "Controlla che i dati raccolti siano corretti")
 
-          deep_copy.follower_ig = res.data[0].follower
-          deep_copy.engagement_ig = res.data[0].engagement
-          deep_copy.is_new_scrape_ig = true
-
-          setProfile(deep_copy)
-        } else handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
-      })
-      .catch((err) => {
-        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
-      })
+            setIsSocialChanged(false)
+            setOriginalUsernameIG(profile.username_ig)
+            let deep_copy = JSON.parse(JSON.stringify(profile))
+            deep_copy.follower_ig = res.data[0].follower
+            deep_copy.engagement_ig = res.data[0].engagement
+            deep_copy.is_new_scrape_ig = true
+            setProfile(deep_copy)
+          } else handleMessage("error", "Errore nella verifica Instagram!", "Qualcosa è andato storto :(")
+        })
+        .catch((err) => {
+          handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :(")
+        })
+    }
   }
 
   const handleMessage = (icon, title, text = null, html = null) => {
@@ -128,13 +129,11 @@ const UpdateProfileModal = (props) => {
           <Button onClick={() => updateProfileData()} color="primary" className="float-right" disabled={isSocialChanged}>
             Aggiorna
           </Button>
-          {
-            /* commented for dev debug 
-              //isSocialChanged && 
-            */ <Button onClick={() => verifySocial()} color="primary" className="float-right me-1">
+          {isSocialChanged && (
+            <Button onClick={() => verifySocial()} color="primary" className="float-right me-1">
               Verifica social
             </Button>
-          }
+          )}
         </ModalBody>
       </Modal>
     </>
