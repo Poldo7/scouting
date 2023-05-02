@@ -84,11 +84,32 @@ const UpdateProfileModal = (props) => {
 
   // ** verify social
   const verifySocial = async () => {
-    if (originalUsernameIG != profile.username_ig) {
-      Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
+    if (originalUsernameYT != profile.username_yt) {
+      await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: [profile.username_yt] })
         .then((res) => {
           console.log(res)
-          if (res.data && res.data.status == "success") {
+          if (res.data && res.data.status === "success") {
+            handleMessage("success", "Verifica Youtube completata", "Controlla che i dati raccolti siano corretti")
+
+            setIsSocialChanged(false)
+            setOriginalUsernameYT(profile.username_yt)
+            let deep_copy = JSON.parse(JSON.stringify(profile))
+            deep_copy.iscritti_yt = res.data[0].subscriber
+            deep_copy.is_new_scrape_yt = true
+            //to-do: update other properties
+            setProfile(deep_copy)
+          } else handleMessage("error", "Errore nella verifica Youtube!", "Qualcosa è andato storto :(")
+        })
+        .catch((err) => {
+          handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :(")
+        })
+    }
+
+    if (originalUsernameIG != profile.username_ig) {
+      await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
+        .then((res) => {
+          console.log(res)
+          if (res.data && res.data.status === "success") {
             handleMessage("success", "Verifica Instagram completata", "Controlla che i dati raccolti siano corretti")
 
             setIsSocialChanged(false)
@@ -97,6 +118,7 @@ const UpdateProfileModal = (props) => {
             deep_copy.follower_ig = res.data[0].follower
             deep_copy.engagement_ig = res.data[0].engagement
             deep_copy.is_new_scrape_ig = true
+            //to-do: update other properties
             setProfile(deep_copy)
           } else handleMessage("error", "Errore nella verifica Instagram!", "Qualcosa è andato storto :(")
         })
