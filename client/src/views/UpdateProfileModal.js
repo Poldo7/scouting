@@ -85,6 +85,7 @@ const UpdateProfileModal = (props) => {
   // ** verify social
   const verifySocial = async () => {
     if (originalUsernameYT != profile.username_yt) {
+      console.log("start youtube veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: [profile.username_yt] })
         .then((res) => {
           console.log(res)
@@ -106,6 +107,7 @@ const UpdateProfileModal = (props) => {
     }
 
     if (originalUsernameIG != profile.username_ig) {
+      console.log("start instagram veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
         .then((res) => {
           console.log(res)
