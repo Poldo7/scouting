@@ -88,14 +88,14 @@ const UpdateProfileModal = (props) => {
       console.log("start youtube veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: [profile.username_yt] })
         .then((res) => {
-          console.log(res)
+          console.log(res, res.data.status, res.data.status === "success")
           if (res.data && res.data.status === "success") {
             handleMessage("success", "Verifica Youtube completata", "Controlla che i dati raccolti siano corretti")
 
             setIsSocialChanged(false)
             setOriginalUsernameYT(profile.username_yt)
             let deep_copy = JSON.parse(JSON.stringify(profile))
-            deep_copy.iscritti_yt = res.data[0].subscriber
+            deep_copy.iscritti_yt = res.data.response[0].subscriber
             deep_copy.is_new_scrape_yt = true
             //to-do: update other properties
             setProfile(deep_copy)
@@ -110,15 +110,15 @@ const UpdateProfileModal = (props) => {
       console.log("start instagram veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
         .then((res) => {
-          console.log(res)
+          console.log(res, res.data.status, res.data.status === "success")
           if (res.data && res.data.status === "success") {
             handleMessage("success", "Verifica Instagram completata", "Controlla che i dati raccolti siano corretti")
 
             setIsSocialChanged(false)
             setOriginalUsernameIG(profile.username_ig)
             let deep_copy = JSON.parse(JSON.stringify(profile))
-            deep_copy.follower_ig = res.data[0].follower
-            deep_copy.engagement_ig = res.data[0].engagement
+            deep_copy.follower_ig = res.data.response[0].follower
+            deep_copy.engagement_ig = res.data.response[0].engagement
             deep_copy.is_new_scrape_ig = true
             //to-do: update other properties
             setProfile(deep_copy)
