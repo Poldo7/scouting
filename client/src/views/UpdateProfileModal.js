@@ -118,8 +118,8 @@ const UpdateProfileModal = (props) => {
             setIsSocialChanged(false)
             setOriginalUsernameIG(profile.username_ig)
             let deep_copy = JSON.parse(JSON.stringify(profile))
-            deep_copy.follower_ig = res.data.response[0].follower
-            deep_copy.engagement_ig = res.data.response[0].engagement
+            deep_copy.follower_ig = res.data.scrapeResult[0].follower
+            deep_copy.engagement_ig = res.data.scrapeResult[0].engagement
             deep_copy.is_new_scrape_ig = true
             //to-do: update other properties
             setProfile(deep_copy)
