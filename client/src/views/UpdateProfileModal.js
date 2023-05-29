@@ -88,7 +88,7 @@ const UpdateProfileModal = (props) => {
       console.log("start youtube veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: [profile.username_yt] })
         .then((res) => {
-          console.log(res, res.data.status, res.data.status === "success")
+          console.log(res, res.data ? true : false, res.data.status, res.data.status === "success")
           if (res.data && res.data.status === "success") {
             handleMessage("success", "Verifica Youtube completata", "Controlla che i dati raccolti siano corretti")
 
@@ -110,8 +110,9 @@ const UpdateProfileModal = (props) => {
       console.log("start instagram veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
         .then((res) => {
-          console.log(res, res.data.status, res.data.status === "success")
+          console.log(res, res.data ? true : false, res.data.status, res.data.status === "success")
           if (res.data && res.data.status === "success") {
+            console.log("ig verificato con successo")
             handleMessage("success", "Verifica Instagram completata", "Controlla che i dati raccolti siano corretti")
 
             setIsSocialChanged(false)
@@ -122,9 +123,13 @@ const UpdateProfileModal = (props) => {
             deep_copy.is_new_scrape_ig = true
             //to-do: update other properties
             setProfile(deep_copy)
-          } else handleMessage("error", "Errore nella verifica Instagram!", "Qualcosa è andato storto :(")
+          } else {
+            console.log("verifica ig fallita")
+            handleMessage("error", "Errore nella verifica Instagram!", "Qualcosa è andato storto :(")
+          }
         })
         .catch((err) => {
+          console.log("CATCH: verifica ig fallita con errore", err)
           handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :(")
         })
     }
