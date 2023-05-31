@@ -11,6 +11,7 @@ const UpdateProfileModal = (props) => {
   const { profile, setProfile, isOpen, setIsOpen, regions, cities, tag, fetchProfiles } = props
 
   const [isSocialChanged, setIsSocialChanged] = useState(false)
+  const [isWaitingScrape, setIsWaitingScrape] = useState(false)
   const [originalUsernameIG, setOriginalUsernameIG] = useState(null)
   const [originalUsernameTT, setOriginalUsernameTT] = useState(null)
   const [originalUsernameYT, setOriginalUsernameYT] = useState(null)
@@ -85,9 +86,11 @@ const UpdateProfileModal = (props) => {
   // ** verify social
   const verifySocial = async () => {
     if (originalUsernameYT != profile.username_yt) {
+      setIsWaitingScrape(true)
       console.log("start youtube veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: [profile.username_yt] })
         .then((res) => {
+          setIsWaitingScrape(false)
           console.log(res, res.data ? true : false, res.data.status, res.data.status === "success")
           if (res.data && res.data.status === "success") {
             handleMessage("success", "Verifica Youtube completata", "Controlla che i dati raccolti siano corretti")
@@ -103,13 +106,16 @@ const UpdateProfileModal = (props) => {
         })
         .catch((err) => {
           handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :(")
+          setIsWaitingScrape(false)
         })
     }
 
     if (originalUsernameIG != profile.username_ig) {
+      setIsWaitingScrape(true)
       console.log("start instagram veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
         .then((res) => {
+          setIsWaitingScrape(false)
           console.log(res, res.data ? true : false, res.data.status, res.data.status === "success")
           if (res.data && res.data.status === "success") {
             console.log("ig verificato con successo")
@@ -129,6 +135,7 @@ const UpdateProfileModal = (props) => {
           }
         })
         .catch((err) => {
+          setIsWaitingScrape(false)
           console.log("CATCH: verifica ig fallita con errore", err)
           handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :(")
         })
@@ -159,7 +166,7 @@ const UpdateProfileModal = (props) => {
             Aggiorna
           </Button>
           {isSocialChanged && (
-            <Button onClick={() => verifySocial()} color="primary" className="float-right me-1">
+            <Button onClick={() => verifySocial()} color="primary" className="float-right me-1" disabled={isWaitingScrape}>
               Verifica social
             </Button>
           )}
