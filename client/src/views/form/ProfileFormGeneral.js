@@ -19,11 +19,24 @@ import Swal from "sweetalert2"
 const animatedComponents = makeAnimated()
 
 const ProfileFormGeneral = (props) => {
-  const { stepper, profile, setProfile, regions, cities, tag } = props
+  const { stepper, profile, setProfile, regions, cities, tag, tabId, activeTab } = props
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newTag, setNewTag] = useState("")
   const [newTagsArray, setNewTagsArray] = useState([])
+  const [interessiValue, setInteressiValue] = useState(null)
+  const [regioniValue, setRegioniValue] = useState(null)
+  const [cittaValue, setCittaValue] = useState(null)
+
+  // ** in case of multiple forms (insert mode)
+  //      =>  we must set multi-selects values only when we select this specific tab (there can be more than one), otherwise multi-selects crash
+  useEffect(() => {
+    if (tabId == activeTab) {
+      setInteressiValue(profile.interessiArray)
+      setRegioniValue(profile.regioniArray)
+      setCittaValue(profile.cittaArray)
+    }
+  }, [activeTab])
 
   const createTag = () => {
     Axios.post(themeConfig.app.serverUrl + "createTag", { tag: newTag })
@@ -62,7 +75,7 @@ const ProfileFormGeneral = (props) => {
     <Fragment>
       <div className="content-header mb-2">
         <h5 className="mb-0">Informazioni generali</h5>
-        <small className="text-muted">Completa i campi obbligatori (*) per continuare</small>
+        <small className="text-muted">Inserisci i campi obbligatori (*) per continuare</small>
       </div>
       <Row>
         <Col md="6" className="mb-2">
@@ -117,12 +130,13 @@ const ProfileFormGeneral = (props) => {
             closeMenuOnSelect={false}
             components={animatedComponents}
             isMulti
-            value={profile.interessiArray}
+            value={interessiValue}
             onChange={(value) => {
               console.log(value)
               let deep_copy = JSON.parse(JSON.stringify(profile))
               deep_copy.interessiArray = value
               deep_copy.interessi = value.map((item) => item.label).join(", ")
+              setInteressiValue(value)
               setProfile(deep_copy)
             }}
             onInputChange={(typedValue) => {
@@ -131,7 +145,7 @@ const ProfileFormGeneral = (props) => {
             options={[...tag, ...newTagsArray]}
             className="react-select"
             classNamePrefix="select"
-            id="interessi"
+            id={"interessi_" + tabId}
             placeholder="Interessi *"
             noOptionsMessage={() => (
               <div style={{ padding: "10px" }}>
@@ -208,11 +222,12 @@ const ProfileFormGeneral = (props) => {
               closeMenuOnSelect={false}
               components={animatedComponents}
               isMulti
-              value={profile.regioniArray}
+              value={regioniValue}
               onChange={(value) => {
                 let deep_copy = JSON.parse(JSON.stringify(profile))
                 deep_copy.regioniArray = value
                 deep_copy.regione = value.map((item) => item.label).join(", ")
+                setRegioniValue(value)
                 setProfile(deep_copy)
               }}
               options={regions}
@@ -232,11 +247,12 @@ const ProfileFormGeneral = (props) => {
               closeMenuOnSelect={false}
               components={animatedComponents}
               isMulti
-              value={profile.cittaArray}
+              value={cittaValue}
               onChange={(value) => {
                 let deep_copy = JSON.parse(JSON.stringify(profile))
                 deep_copy.cittaArray = value
                 deep_copy.citta = value.map((item) => item.label).join(", ")
+                setCittaValue(value)
                 setProfile(deep_copy)
               }}
               options={cities}

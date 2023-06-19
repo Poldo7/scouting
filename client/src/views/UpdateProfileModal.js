@@ -85,59 +85,110 @@ const UpdateProfileModal = (props) => {
 
   // ** verify social
   const verifySocial = async () => {
+    if (profile.scrapeRetries + profile.scrapeErrors > 6) {
+      Swal.fire({
+        title: "Limiti tentativi raggiunto: non è possibile verificare i social",
+        text: "Se i dati inseriti sono corretti puoi saltare la verifica e procedere salvando i dati. Faremo in automatico nuovi tentativi per verificare i suoi social",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        cancelButtonText: "Devo ricontrollare",
+        confirmButtonText: "Sono sicuro dei social, salva i dati",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          updateProfileData()
+        }
+      })
+    }
+
+    Swal.fire({
+      position: "top-end",
+      icon: "info",
+      title: "Verifica in corso...",
+      text: "Non chiudere la finestra",
+      showConfirmButton: false,
+      timer: 4000,
+    })
+
+    let deep_copy = JSON.parse(JSON.stringify(profile))
+    deep_copy.scrapeRetries++
+
+    setIsWaitingScrape(true)
+    let isWaitScrapeIG = false,
+      isWaitScrapeYT = false
+
     if (originalUsernameYT != profile.username_yt) {
-      setIsWaitingScrape(true)
+      isWaitScrapeYT = true
+      deep_copy.iscritti_yt = null
       console.log("start youtube veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: [profile.username_yt] })
         .then((res) => {
-          setIsWaitingScrape(false)
+          isWaitScrapeYT = false
+          if (!isWaitScrapeIG) {
+            handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
+            setIsWaitingScrape(false)
+          }
           console.log(res, res.data ? true : false, res.data.status, res.data.status === "success")
           if (res.data && res.data.status === "success") {
-            handleMessage("success", "Verifica Youtube completata", "Controlla che i dati raccolti siano corretti")
-
             setIsSocialChanged(false)
             setOriginalUsernameYT(profile.username_yt)
-            let deep_copy = JSON.parse(JSON.stringify(profile))
             deep_copy.iscritti_yt = res.data.response[0].subscriber
             deep_copy.is_new_scrape_yt = true
             //to-do: update other properties
-            setProfile(deep_copy)
-          } else handleMessage("error", "Errore nella verifica Youtube!", "Qualcosa è andato storto :(")
+          } else {
+            handleMessage("error", "Errore nella verifica Youtube!", "Controlla i dati siano corretti")
+            deep_copy.scrapeErrors++
+          }
+
+          setProfile(deep_copy)
         })
         .catch((err) => {
           handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :(")
-          setIsWaitingScrape(false)
+          console.log("CATCH: verifica yt fallita con errore", err)
+          isWaitScrapeYT = false
+          deep_copy.scrapeErrors++
+
+          setProfile(deep_copy)
         })
     }
 
     if (originalUsernameIG != profile.username_ig) {
-      setIsWaitingScrape(true)
+      isWaitScrapeIG = true
+      deep_copy.follower_ig = null
+      deep_copy.engagement_ig = null
       console.log("start instagram veirfy...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
         .then((res) => {
-          setIsWaitingScrape(false)
+          isWaitScrapeIG = false
+          if (!isWaitScrapeYT) {
+            handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
+            setIsWaitingScrape(false)
+          }
           console.log(res, res.data ? true : false, res.data.status, res.data.status === "success")
           if (res.data && res.data.status === "success") {
             console.log("ig verificato con successo")
-            handleMessage("success", "Verifica Instagram completata", "Controlla che i dati raccolti siano corretti")
-
             setIsSocialChanged(false)
             setOriginalUsernameIG(profile.username_ig)
-            let deep_copy = JSON.parse(JSON.stringify(profile))
             deep_copy.follower_ig = res.data.scrapeResult[0].follower
             deep_copy.engagement_ig = res.data.scrapeResult[0].engagement
             deep_copy.is_new_scrape_ig = true
             //to-do: update other properties
-            setProfile(deep_copy)
           } else {
             console.log("verifica ig fallita")
-            handleMessage("error", "Errore nella verifica Instagram!", "Qualcosa è andato storto :(")
+            handleMessage("error", "Errore nella verifica Instagram!", "Controlla i dati siano corretti")
+            deep_copy.scrapeErrors++
           }
+
+          setProfile(deep_copy)
         })
         .catch((err) => {
-          setIsWaitingScrape(false)
-          console.log("CATCH: verifica ig fallita con errore", err)
           handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :(")
+          console.log("CATCH: verifica ig fallita con errore", err)
+          isWaitScrapeIG = false
+          deep_copy.scrapeErrors++
+
+          setProfile(deep_copy)
         })
     }
   }
@@ -161,7 +212,7 @@ const UpdateProfileModal = (props) => {
       <Modal isOpen={isOpen} backdrop={true} toggle={null} className="modal-dialog-centered modal-lg">
         <ModalHeader toggle={() => setIsOpen(false)}>Modifica profilo</ModalHeader>
         <ModalBody>
-          <ProfileForm profile={profile} setProfile={setProfile} regions={regions} cities={cities} tag={tag} />
+          <ProfileForm profile={profile} setProfile={setProfile} regions={regions} cities={cities} tag={tag} isWaitingScrape={isWaitingScrape} />
           <Button onClick={() => updateProfileData()} color="primary" className="float-right" disabled={isSocialChanged}>
             Aggiorna
           </Button>

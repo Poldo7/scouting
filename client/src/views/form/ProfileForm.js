@@ -7,7 +7,7 @@ import ProfileFormSocial from "./ProfileFormSocial"
 
 const ProfileForm = (props) => {
   // ** Props
-  const { regions, cities, tag, profile, setProfile } = props
+  const { regions, cities, tag, profile, setProfile, tabId, activeTab, isWaitingScrape } = props
   // ** State
   const [stepper, setStepper] = useState(null)
   // ** Ref
@@ -18,13 +18,24 @@ const ProfileForm = (props) => {
       id: "account-details",
       title: "Generali",
       subtitle: "Dati e target",
-      content: <ProfileFormGeneral profile={profile} setProfile={setProfile} regions={regions} cities={cities} tag={tag} stepper={stepper} />,
+      content: (
+        <ProfileFormGeneral
+          profile={profile}
+          setProfile={setProfile}
+          regions={regions}
+          cities={cities}
+          tag={tag}
+          stepper={stepper}
+          tabId={tabId}
+          activeTab={activeTab}
+        />
+      ),
     },
     {
       id: "social-links",
       title: "Social",
       subtitle: "Piattaforme",
-      content: <ProfileFormSocial profile={profile} setProfile={setProfile} />,
+      content: <ProfileFormSocial profile={profile} setProfile={setProfile} tabId={tabId} isWaitingScrape={isWaitingScrape} />,
     },
   ]
 

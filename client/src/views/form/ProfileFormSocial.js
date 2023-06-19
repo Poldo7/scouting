@@ -1,11 +1,11 @@
 // ** React Imports
-import { Fragment } from "react"
+import { Fragment, useEffect } from "react"
 
 // ** Icons Imports
 import { ArrowLeft, ArrowRight, Briefcase, Check, Heart, Star, Users, X } from "react-feather"
 
 // ** Reactstrap Imports
-import { Label, Row, Col, InputGroup, Input, InputGroupText, Form, Button, Badge } from "reactstrap"
+import { Label, Row, Col, InputGroup, Input, InputGroupText, Form, Button, Badge, Spinner } from "reactstrap"
 
 // ** Third Party Components
 import { abbreviaNumero } from "./../utils"
@@ -20,7 +20,7 @@ const logo_tiktok = require("@src/assets/images/logo/tiktok.png").default
 const logo_youtube = require("@src/assets/images/logo/youtube.png").default
 
 const ProfileFormSocial = (props) => {
-  const { profile, setProfile } = props
+  const { profile, setProfile, tabId, isWaitingScrape } = props
 
   return (
     <Fragment>
@@ -46,6 +46,7 @@ const ProfileFormSocial = (props) => {
                   <Input
                     placeholder="Username"
                     value={profile.username_ig}
+                    disabled={isWaitingScrape}
                     onChange={(e) => {
                       setProfile({ ...profile, username_ig: e.target.value })
                     }}
@@ -56,7 +57,14 @@ const ProfileFormSocial = (props) => {
                     <Badge color="light-primary" className="rounded p-75">
                       <Users className="font-medium-2" />
                     </Badge>
-                    {profile.follower_ig != null ? (
+                    {isWaitingScrape == true ? (
+                      <div className="ms-75">
+                        <h4 className="mb-0">
+                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
+                        </h4>
+                        <small className="text-info">Verifica in corso...</small>
+                      </div>
+                    ) : profile.follower_ig != null ? (
                       <div className="ms-75">
                         <h4 className="mb-0">{abbreviaNumero(profile.follower_ig)}</h4>
                         <small className="text-success">Verificato</small>
@@ -72,7 +80,14 @@ const ProfileFormSocial = (props) => {
                     <Badge color="light-primary" className="rounded p-75">
                       <Star className="font-medium-2" />
                     </Badge>
-                    {profile.engagement_ig != null ? (
+                    {isWaitingScrape == true ? (
+                      <div className="ms-75">
+                        <h4 className="mb-0">
+                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
+                        </h4>
+                        <small className="text-info">Verifica in corso...</small>
+                      </div>
+                    ) : profile.engagement_ig != null ? (
                       <div className="ms-75">
                         <h4 className="mb-0">{profile.engagement_ig}%</h4>
                         <small className="text-success">Verificato</small>
@@ -93,8 +108,12 @@ const ProfileFormSocial = (props) => {
               <Input
                 type="switch"
                 checked={profile.username_ig != null}
-                id="instagram"
+                id={"instagram_" + tabId}
+                onClick={(e) => {
+                  console.log(e)
+                }}
                 onChange={async (e) => {
+                  console.log("trigger intagram switch: ", e.target.checked, profile.username_ig)
                   if (e.target.checked) {
                     setProfile({ ...profile, username_ig: "" })
                   } else {
@@ -121,7 +140,7 @@ const ProfileFormSocial = (props) => {
                   }
                 }}
               />
-              <Label className="form-check-label" for="instagram">
+              <Label className="form-check-label" for={"instagram_" + tabId}>
                 <span className="switch-icon-left">
                   <Check size={14} />
                 </span>
@@ -152,6 +171,7 @@ const ProfileFormSocial = (props) => {
                   <Input
                     placeholder="Username"
                     value={profile.username_tt}
+                    disabled={isWaitingScrape}
                     onChange={(e) => {
                       setProfile({ ...profile, username_tt: e.target.value })
                     }}
@@ -162,7 +182,14 @@ const ProfileFormSocial = (props) => {
                     <Badge color="light-primary" className="rounded p-75">
                       <Users className="font-medium-2" />
                     </Badge>
-                    {profile.follower_tt != null ? (
+                    {isWaitingScrape == true ? (
+                      <div className="ms-75">
+                        <h4 className="mb-0">
+                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
+                        </h4>
+                        <small className="text-info">Verifica in corso...</small>
+                      </div>
+                    ) : profile.follower_tt != null ? (
                       <div className="ms-75">
                         <h4 className="mb-0">{abbreviaNumero(profile.follower_tt)}</h4>
                         <small className="text-success">Verificato</small>
@@ -178,7 +205,14 @@ const ProfileFormSocial = (props) => {
                     <Badge color="light-primary" className="rounded p-75">
                       <Heart className="font-medium-2" />
                     </Badge>
-                    {profile.likes_tt != null ? (
+                    {isWaitingScrape == true ? (
+                      <div className="ms-75">
+                        <h4 className="mb-0">
+                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
+                        </h4>
+                        <small className="text-info">Verifica in corso...</small>
+                      </div>
+                    ) : profile.likes_tt != null ? (
                       <div className="ms-75">
                         <h4 className="mb-0">{abbreviaNumero(profile.likes_tt)}</h4>
                         <small className="text-success">Verificato</small>
@@ -199,7 +233,7 @@ const ProfileFormSocial = (props) => {
               <Input
                 type="switch"
                 checked={profile.username_tt != null}
-                id="tiktok"
+                id={"tiktok_" + tabId}
                 onChange={async (e) => {
                   if (e.target.checked) {
                     setProfile({ ...profile, username_tt: "" })
@@ -227,7 +261,7 @@ const ProfileFormSocial = (props) => {
                   }
                 }}
               />
-              <Label className="form-check-label" for="tiktok">
+              <Label className="form-check-label" for={"tiktok_" + tabId}>
                 <span className="switch-icon-left">
                   <Check size={14} />
                 </span>
@@ -257,6 +291,7 @@ const ProfileFormSocial = (props) => {
                   <Input
                     placeholder="Username"
                     value={profile.username_yt}
+                    disabled={isWaitingScrape}
                     onChange={(e) => {
                       setProfile({ ...profile, username_yt: e.target.value })
                     }}
@@ -267,7 +302,14 @@ const ProfileFormSocial = (props) => {
                     <Badge color="light-primary" className="rounded p-75">
                       <Users className="font-medium-2" />
                     </Badge>
-                    {profile.iscritti_yt != null ? (
+                    {isWaitingScrape == true ? (
+                      <div className="ms-75">
+                        <h4 className="mb-0">
+                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
+                        </h4>
+                        <small className="text-info">Verifica in corso...</small>
+                      </div>
+                    ) : profile.iscritti_yt != null ? (
                       <div className="ms-75">
                         <h4 className="mb-0">{abbreviaNumero(profile.iscritti_yt)}</h4>
                         <small className="text-success">Verificato</small>
@@ -288,7 +330,7 @@ const ProfileFormSocial = (props) => {
               <Input
                 type="switch"
                 checked={profile.username_yt != null}
-                id="youtube"
+                id={"youtube_" + tabId}
                 onChange={async (e) => {
                   if (e.target.checked) {
                     setProfile({ ...profile, username_yt: "" })
@@ -316,7 +358,7 @@ const ProfileFormSocial = (props) => {
                   }
                 }}
               />
-              <Label className="form-check-label" for="youtube">
+              <Label className="form-check-label" for={"youtube_" + tabId}>
                 <span className="switch-icon-left">
                   <Check size={14} />
                 </span>

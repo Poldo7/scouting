@@ -58,9 +58,32 @@ const Home = () => {
   const [formTagList, setFormTagList] = useState([])
   const [formRegionsList, setFormRegionsList] = useState([])
   const [formCitiesList, setFormCitiesList] = useState([])
+  const emptyProfileObject = {
+    contatti: "",
+    interessiArray: [],
+    nome: "",
+    eta: "",
+    regioniArray: [],
+    cittaArray: [],
+    username_ig: null,
+    username_ig_verified: null,
+    username_tt: null,
+    username_tt_verified: null,
+    username_yt: null,
+    username_yt_verified: null,
+    follower_ig: null,
+    engagement_ig: null,
+    follower_tt: null,
+    likes_tt: null,
+    iscritti_yt: null,
+    esito_ig: null,
+    esito_tt: null,
+    esito_yt: null,
+  }
   // ** Modal State
   const [insertModalOpen, setInsertModalOpen] = useState(false)
   const [updateModalOpen, setUpdateModalOpen] = useState(false)
+  const [insertModalData, setInsertModalData] = useState([])
   const [updateModalData, setUpdateModalData] = useState({})
   // ** Column Actions
   const columnActions = [
@@ -91,15 +114,15 @@ const Home = () => {
                   value: profile.stato,
                   label: profile.stato == 2 ? "In domini" : profile.stato == 1 ? "Con agenzia" : "Senza agenzia",
                 }
+                // add properties for monitor scraping retries
+                profile.scrapeRetries = 0
+                profile.scrapeErrors = 0
 
                 setUpdateModalOpen(true)
                 setUpdateModalData(profile)
               }}
             >
               <Edit size={15} className="text-primary" />
-            </Button.Ripple>
-            <Button.Ripple color="flat-primary" onClick={() => updateProfileScrape(row.id_influencer)}>
-              <RotateCw size={15} className="text-primary" />
             </Button.Ripple>
             <Button.Ripple
               color="flat-danger"
@@ -124,6 +147,10 @@ const Home = () => {
     fetchProfiles()
     getLuoghi()
     getTag()
+    let empty = [emptyProfileObject]
+    empty.scrapeRetries = 0
+    empty.scrapeErrors = 0
+    setInsertModalData(empty)
   }, [])
 
   // ** Function for fetch table data
@@ -234,9 +261,9 @@ const Home = () => {
       MySwal.fire({
         title: "Operazione annullata",
         text: "L'influencer è salvo, per ora :)",
-        icon: "error",
+        icon: "info",
         customClass: {
-          confirmButton: "btn btn-success",
+          confirmButton: "btn btn-info",
         },
       })
     }
@@ -439,6 +466,9 @@ const Home = () => {
       <InsertProfileModal
         isOpen={insertModalOpen}
         setIsOpen={setInsertModalOpen}
+        profilesArray={insertModalData}
+        setProfilesArray={setInsertModalData}
+        emptyProfileObject={emptyProfileObject}
         regions={formRegionsList}
         cities={formCitiesList}
         tag={formTagList}
