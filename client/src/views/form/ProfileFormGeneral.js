@@ -163,7 +163,7 @@ const ProfileFormGeneral = (props) => {
             <ModalHeader className="bg-transparent" toggle={() => setIsModalOpen(false)}></ModalHeader>
             <ModalBody className="px-sm-5 mx-50 pb-3">
               <h3 className="text-center mb-75">Aggiungi interesse</h3>
-              <p className="text-center">Utilizzarlo solo se si è sicuri che non esista già</p>
+              <p className="text-center">Procedi solo se sei sicuro che non esista già una variante di questo nome</p>
               <Row tag="form" className="gy-1 gx-2 mt-75">
                 <div className="form-floating mt-2">
                   <Input type="text" id="floatingInput" placeholder="Nome interesse" value={newTag} onChange={(e) => setNewTag(e.target.value)} />

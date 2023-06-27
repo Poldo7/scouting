@@ -35,14 +35,11 @@ const Filters = (props) => {
     filterFollowerMaxIG,
     filterEngagementMinIG,
     filterEngagementMaxIG,
-    filterFollowerMinTT,
-    filterFollowerMaxTT,
     filterSubscriberMinYT,
     filterSubscriberMaxYT,
     setFilterCounter,
     followerMaxIG,
     engagementMaxIG,
-    followerMaxTT,
     subscriberMaxYT,
     // ** update filters data
     setFilterName,
@@ -57,8 +54,6 @@ const Filters = (props) => {
     setFilterFollowerMaxIG,
     setFilterEngagementMinIG,
     setFilterEngagementMaxIG,
-    setFilterFollowerMinTT,
-    setFilterFollowerMaxTT,
     setFilterSubscriberMinYT,
     setFilterSubscriberMaxYT,
   } = props
@@ -77,7 +72,6 @@ const Filters = (props) => {
     if (isInstragramChecked || isTiktokChecked || isYoutubeChecked) filterCounter++
     if (filterFollowerMinIG > 0 || filterFollowerMaxIG < followerMaxIG) filterCounter++
     if (filterEngagementMinIG > 0 || filterEngagementMaxIG < engagementMaxIG) filterCounter++
-    if (filterFollowerMinTT > 0 || filterFollowerMaxTT < followerMaxTT) filterCounter++
     if (filterSubscriberMinYT > 0 || filterSubscriberMaxYT < subscriberMaxYT) filterCounter++
     setFilterCounter(filterCounter)
 
@@ -97,8 +91,6 @@ const Filters = (props) => {
     filterFollowerMaxIG,
     filterEngagementMinIG,
     filterEngagementMaxIG,
-    filterFollowerMinTT,
-    filterFollowerMaxTT,
     filterSubscriberMinYT,
     filterSubscriberMaxYT,
   ])
@@ -116,7 +108,6 @@ const Filters = (props) => {
         youtube = false,
         followerIG = false,
         engagementIG = false,
-        followerTT = false,
         subscriberYT = false
 
       // ** NAME
@@ -187,17 +178,12 @@ const Filters = (props) => {
           if (profile.engagement_ig >= filterEngagementMinIG && profile.engagement_ig <= filterEngagementMaxIG) engagementIG = true
       } else engagementIG = true
 
-      // ** FOLLOWER TT
-      if (filterFollowerMinTT > 0 || filterFollowerMaxTT < followerMaxTT) {
-        if (profile.username_tt) if (profile.follower_tt >= filterFollowerMinTT && profile.follower_tt <= filterFollowerMaxTT) followerTT = true
-      } else followerTT = true
-
       // ** SUBSCRIBER YT
       if (filterSubscriberMinYT > 0 || filterSubscriberMaxYT < subscriberMaxYT) {
         if (profile.username_yt) if (profile.iscritti_yt >= filterSubscriberMinYT && profile.iscritti_yt <= filterSubscriberMaxYT) subscriberYT = true
       } else subscriberYT = true
-      //console.log(name, tag, eta, state, region, instagram, tiktok, youtube, followerIG, engagementIG, followerTT, subscriberYT)
-      return name && tag && eta && state && region && instagram && tiktok && youtube && followerIG && engagementIG && followerTT && subscriberYT
+      //console.log(name, tag, eta, state, region, instagram, tiktok, youtube, followerIG, engagementIG, subscriberYT)
+      return name && tag && eta && state && region && instagram && tiktok && youtube && followerIG && engagementIG && subscriberYT
     })
 
     setFilteredData(filteredData)
@@ -281,10 +267,6 @@ const Filters = (props) => {
                     checked={isTiktokChecked}
                     onChange={(e) => {
                       setIsTiktokChecked(e.target.checked)
-                      if (e.target.checked == false) {
-                        setFilterFollowerMinTT(0)
-                        setFilterFollowerMaxTT(followerMaxTT)
-                      }
                     }}
                   />
                   <Label className="form-check-label" for="social-tt">
@@ -349,28 +331,6 @@ const Filters = (props) => {
                     setFilterEngagementMaxIG(value.max < engagementMaxIG ? value.max : engagementMaxIG)
                     if (!isInstragramChecked && (value.min > 0 || value.max < engagementMaxIG)) {
                       setIsInstragramChecked(true)
-                    }
-                  }}
-                />
-              </div>
-            </Col>
-            <Col className="mb-2" xl="3" md="6" sm="12">
-              <Label className="form-label" for="follower_tt" style={{ marginBottom: "25px" }}>
-                <Music size={16} className="vertical-align-text-bottom" style={{ marginRight: "5px" }} /> Follower TikTok
-              </Label>
-              <div style={{ padding: "0 20px 0 10px" }} className="tiktok-range">
-                <InputRange
-                  maxValue={followerMaxTT}
-                  minValue={0}
-                  step={5000}
-                  value={{ min: filterFollowerMinTT, max: filterFollowerMaxTT }}
-                  formatLabel={(value) => abbreviaNumero(value)}
-                  onChange={(value) => {
-                    if (value.max - value.min < followerMaxTT / 10) return
-                    setFilterFollowerMinTT(value.min > 0 ? value.min : 0)
-                    setFilterFollowerMaxTT(value.max < followerMaxTT ? value.max : followerMaxTT)
-                    if (!isTiktokChecked && (value.min > 0 || value.max < followerMaxTT)) {
-                      setIsTiktokChecked(true)
                     }
                   }}
                 />

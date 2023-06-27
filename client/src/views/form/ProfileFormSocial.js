@@ -20,7 +20,7 @@ const logo_tiktok = require("@src/assets/images/logo/tiktok.png").default
 const logo_youtube = require("@src/assets/images/logo/youtube.png").default
 
 const ProfileFormSocial = (props) => {
-  const { profile, setProfile, tabId, isWaitingScrape } = props
+  const { profile, setProfile, tabId, isWaitScrapeIG, isWaitScrapeYT } = props
 
   return (
     <Fragment>
@@ -46,7 +46,7 @@ const ProfileFormSocial = (props) => {
                   <Input
                     placeholder="Username"
                     value={profile.username_ig}
-                    disabled={isWaitingScrape}
+                    disabled={isWaitScrapeIG}
                     onChange={(e) => {
                       setProfile({ ...profile, username_ig: e.target.value })
                     }}
@@ -57,7 +57,7 @@ const ProfileFormSocial = (props) => {
                     <Badge color="light-primary" className="rounded p-75">
                       <Users className="font-medium-2" />
                     </Badge>
-                    {isWaitingScrape == true ? (
+                    {isWaitScrapeIG == true ? (
                       <div className="ms-75">
                         <h4 className="mb-0">
                           <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
@@ -80,7 +80,7 @@ const ProfileFormSocial = (props) => {
                     <Badge color="light-primary" className="rounded p-75">
                       <Star className="font-medium-2" />
                     </Badge>
-                    {isWaitingScrape == true ? (
+                    {isWaitScrapeIG == true ? (
                       <div className="ms-75">
                         <h4 className="mb-0">
                           <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
@@ -109,11 +109,7 @@ const ProfileFormSocial = (props) => {
                 type="switch"
                 checked={profile.username_ig != null}
                 id={"instagram_" + tabId}
-                onClick={(e) => {
-                  console.log(e)
-                }}
                 onChange={async (e) => {
-                  console.log("trigger intagram switch: ", e.target.checked, profile.username_ig)
                   if (e.target.checked) {
                     setProfile({ ...profile, username_ig: "" })
                   } else {
@@ -162,7 +158,7 @@ const ProfileFormSocial = (props) => {
             {profile.username_tt == null ? (
               <>
                 <p className="fw-bolder mb-0">TikTok</p>
-                <span>Non connesso</span>
+                <span>Non collegato</span>
               </>
             ) : (
               <>
@@ -171,60 +167,11 @@ const ProfileFormSocial = (props) => {
                   <Input
                     placeholder="Username"
                     value={profile.username_tt}
-                    disabled={isWaitingScrape}
                     onChange={(e) => {
                       setProfile({ ...profile, username_tt: e.target.value })
                     }}
                   />
                 </InputGroup>
-                <div className="social-container justify-content-around pt-75">
-                  <div className="d-flex align-items-start me-2">
-                    <Badge color="light-primary" className="rounded p-75">
-                      <Users className="font-medium-2" />
-                    </Badge>
-                    {isWaitingScrape == true ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">
-                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
-                        </h4>
-                        <small className="text-info">Verifica in corso...</small>
-                      </div>
-                    ) : profile.follower_tt != null ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">{abbreviaNumero(profile.follower_tt)}</h4>
-                        <small className="text-success">Verificato</small>
-                      </div>
-                    ) : (
-                      <div className="ms-75">
-                        <h4 className="mb-0">?</h4>
-                        <small className="text-danger">Non verificato</small>
-                      </div>
-                    )}
-                  </div>
-                  <div className="d-flex align-items-start">
-                    <Badge color="light-primary" className="rounded p-75">
-                      <Heart className="font-medium-2" />
-                    </Badge>
-                    {isWaitingScrape == true ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">
-                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
-                        </h4>
-                        <small className="text-info">Verifica in corso...</small>
-                      </div>
-                    ) : profile.likes_tt != null ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">{abbreviaNumero(profile.likes_tt)}</h4>
-                        <small className="text-success">Verificato</small>
-                      </div>
-                    ) : (
-                      <div className="ms-75">
-                        <h4 className="mb-0">?</h4>
-                        <small className="text-danger">Non verificato</small>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </>
             )}
           </div>
@@ -239,12 +186,12 @@ const ProfileFormSocial = (props) => {
                     setProfile({ ...profile, username_tt: "" })
                   } else {
                     if (profile.username_tt == "") {
-                      setProfile({ ...profile, username_tt: null, follower_tt: null, likes_tt: null })
+                      setProfile({ ...profile, username_tt: null })
                       return
                     }
                     const result = await MySwal.fire({
                       title: "Scollegare TikTok?",
-                      text: 'Procedendo rimuoverai "@' + profile.username_tt + '" ed i suoi dati',
+                      text: 'Procedendo rimuoverai "@' + profile.username_tt + '" dal profilo',
                       icon: "warning",
                       showCancelButton: true,
                       confirmButtonText: "Si, Rimuovilo!",
@@ -256,7 +203,7 @@ const ProfileFormSocial = (props) => {
                       buttonsStyling: false,
                     })
                     if (result.value) {
-                      setProfile({ ...profile, username_tt: null, follower_tt: null, likes_tt: null })
+                      setProfile({ ...profile, username_tt: null })
                     }
                   }
                 }}
@@ -291,7 +238,7 @@ const ProfileFormSocial = (props) => {
                   <Input
                     placeholder="Username"
                     value={profile.username_yt}
-                    disabled={isWaitingScrape}
+                    disabled={isWaitScrapeYT}
                     onChange={(e) => {
                       setProfile({ ...profile, username_yt: e.target.value })
                     }}
@@ -302,7 +249,7 @@ const ProfileFormSocial = (props) => {
                     <Badge color="light-primary" className="rounded p-75">
                       <Users className="font-medium-2" />
                     </Badge>
-                    {isWaitingScrape == true ? (
+                    {isWaitScrapeYT == true ? (
                       <div className="ms-75">
                         <h4 className="mb-0">
                           <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />

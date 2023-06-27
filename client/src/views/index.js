@@ -34,7 +34,6 @@ const Home = () => {
   const [regionOptions, setRegionOptions] = useState([])
   const [followerMaxIG, setFollowerMaxIG] = useState(1)
   const [engagementMaxIG, setEngagementMaxIG] = useState(1)
-  const [followerMaxTT, setFollowerMaxTT] = useState(1)
   const [subscriberMaxYT, setSubscriberMaxYT] = useState(1)
   // ** Filters Values
   const [filterCounter, setFilterCounter] = useState(0)
@@ -50,8 +49,6 @@ const Home = () => {
   const [filterFollowerMaxIG, setFilterFollowerMaxIG] = useState(1)
   const [filterEngagementMinIG, setFilterEngagementMinIG] = useState(0)
   const [filterEngagementMaxIG, setFilterEngagementMaxIG] = useState(1)
-  const [filterFollowerMinTT, setFilterFollowerMinTT] = useState(0)
-  const [filterFollowerMaxTT, setFilterFollowerMaxTT] = useState(1)
   const [filterSubscriberMinYT, setFilterSubscriberMinYT] = useState(0)
   const [filterSubscriberMaxYT, setFilterSubscriberMaxYT] = useState(1)
   // ** Form Params
@@ -68,16 +65,12 @@ const Home = () => {
     username_ig: null,
     username_ig_verified: null,
     username_tt: null,
-    username_tt_verified: null,
     username_yt: null,
     username_yt_verified: null,
     follower_ig: null,
     engagement_ig: null,
-    follower_tt: null,
-    likes_tt: null,
     iscritti_yt: null,
     esito_ig: null,
-    esito_tt: null,
     esito_yt: null,
   }
   // ** Modal State
@@ -85,6 +78,7 @@ const Home = () => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false)
   const [insertModalData, setInsertModalData] = useState([])
   const [updateModalData, setUpdateModalData] = useState({})
+  const [updateModalDataCopy, setUpdateModalDataCopy] = useState({}) //copy for recognize updates
   // ** Column Actions
   const columnActions = [
     {
@@ -114,12 +108,13 @@ const Home = () => {
                   value: profile.stato,
                   label: profile.stato == 2 ? "In domini" : profile.stato == 1 ? "Con agenzia" : "Senza agenzia",
                 }
-                // add properties for monitor scraping retries
+                // add properties for monitor scraping retries and errors
                 profile.scrapeRetries = 0
                 profile.scrapeErrors = 0
 
                 setUpdateModalOpen(true)
                 setUpdateModalData(profile)
+                setUpdateModalDataCopy(profile)
               }}
             >
               <Edit size={15} className="text-primary" />
@@ -137,10 +132,6 @@ const Home = () => {
       },
     },
   ]
-
-  useEffect(() => {
-    console.log("index", updateModalData)
-  }, [updateModalData])
 
   // ** main use effect
   useEffect(() => {
@@ -169,12 +160,10 @@ const Home = () => {
           // set state var for max values
           setFollowerMaxIG(result.followerMaxIG)
           setEngagementMaxIG(result.engagementMaxIG)
-          setFollowerMaxTT(result.followerMaxTT)
           setSubscriberMaxYT(result.subscriberMaxYT)
           // set state var for filters (default values)
           setFilterFollowerMaxIG(result.followerMaxIG)
           setFilterEngagementMaxIG(result.engagementMaxIG)
-          setFilterFollowerMaxTT(result.followerMaxTT)
           setFilterSubscriberMaxYT(result.subscriberMaxYT)
 
           // ** SCRAPING
@@ -288,8 +277,6 @@ const Home = () => {
     setFilterFollowerMaxIG(followerMaxIG)
     setFilterEngagementMinIG(0)
     setFilterEngagementMaxIG(engagementMaxIG)
-    setFilterFollowerMinTT(0)
-    setFilterFollowerMaxTT(followerMaxTT)
     setFilterSubscriberMinYT(0)
     setFilterSubscriberMaxYT(subscriberMaxYT)
   }
@@ -406,10 +393,6 @@ const Home = () => {
           setFilterEngagementMinIG={setFilterEngagementMinIG}
           filterEngagementMaxIG={filterEngagementMaxIG}
           setFilterEngagementMaxIG={setFilterEngagementMaxIG}
-          filterFollowerMinTT={filterFollowerMinTT}
-          setFilterFollowerMinTT={setFilterFollowerMinTT}
-          filterFollowerMaxTT={filterFollowerMaxTT}
-          setFilterFollowerMaxTT={setFilterFollowerMaxTT}
           filterSubscriberMinYT={filterSubscriberMinYT}
           setFilterSubscriberMinYT={setFilterSubscriberMinYT}
           filterSubscriberMaxYT={filterSubscriberMaxYT}
@@ -417,7 +400,6 @@ const Home = () => {
           // ** max values for filters range
           followerMaxIG={followerMaxIG}
           engagementMaxIG={engagementMaxIG}
-          followerMaxTT={followerMaxTT}
           subscriberMaxYT={subscriberMaxYT}
         />
         <div className="react-dataTable">
@@ -478,7 +460,9 @@ const Home = () => {
         isOpen={updateModalOpen}
         setIsOpen={setUpdateModalOpen}
         profile={updateModalData}
+        profileCopy={updateModalDataCopy}
         setProfile={setUpdateModalData}
+        setProfileCopy={setUpdateModalDataCopy}
         regions={formRegionsList}
         cities={formCitiesList}
         tag={formTagList}

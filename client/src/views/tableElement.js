@@ -26,7 +26,7 @@ export const columns = [
       <div className="d-flex align-items-center cursor-initial">
         <div className="user-info text-truncate ms-1">
           <span className="d-block fw-bold text-truncate">
-            {row.ig_not_found || row.tt_not_found || row.yt_not_found ? (
+            {row.ig_not_found || row.yt_not_found ? (
               <>
                 <AlertCircle size={16} className="me-50 text-danger vertical-align-text-bottom" id={"rowAlert_" + row.id_influencer} />
                 <UncontrolledTooltip placement="top" target={"rowAlert_" + row.id_influencer}>
@@ -35,11 +35,6 @@ export const columns = [
                     {row.ig_not_found && (
                       <span>
                         <Instagram size={16} /> {row.username_ig}
-                      </span>
-                    )}
-                    {row.tt_not_found && (
-                      <span>
-                        <Music size={16} /> {row.username_tt}
                       </span>
                     )}
                     {row.yt_not_found && (
@@ -51,7 +46,7 @@ export const columns = [
                 </UncontrolledTooltip>
               </>
             ) : (
-              (row.ig_not_scraped || row.tt_not_scraped || row.yt_not_scraped) && (
+              (row.ig_not_scraped || row.yt_not_scraped) && (
                 <>
                   <AlertCircle size={16} className="me-50 text-warning vertical-align-text-bottom" id={"rowWarning_" + row.id_influencer} />
                   <UncontrolledTooltip placement="top" target={"rowWarning_" + row.id_influencer}>
@@ -60,11 +55,6 @@ export const columns = [
                       {row.ig_not_scraped && (
                         <span>
                           <Instagram size={16} /> {row.username_ig}
-                        </span>
-                      )}
-                      {row.tt_not_scraped && (
-                        <span>
-                          <Music size={16} /> {row.username_tt}
                         </span>
                       )}
                       {row.yt_not_scraped && (
@@ -114,9 +104,7 @@ export const columns = [
     cell: (row) => (
       <div className="d-flex align-items-center cursor-initial">
         <div className="user-info text-truncate ms-1">
-          <Badge className="background-purple font-12px">
-            {row.follower_ig ? abbreviaNumero(row.follower_ig) : <span className="text-secondary">?</span>}
-          </Badge>
+          <Badge className="background-purple font-12px">{row.follower_ig ? abbreviaNumero(row.follower_ig) : <span>-</span>}</Badge>
         </div>
       </div>
     ),
@@ -134,9 +122,7 @@ export const columns = [
     cell: (row) => (
       <div className="d-flex align-items-center cursor-initial">
         <div className="user-info text-truncate ms-1">
-          <Badge className="background-purple font-12px">
-            {row.engagement_ig ? row.engagement_ig + "%" : <span className="text-secondary">?</span>}
-          </Badge>
+          <Badge className="background-purple font-12px">{row.engagement_ig ? row.engagement_ig + "%" : <span>-</span>}</Badge>
         </div>
       </div>
     ),
@@ -217,22 +203,6 @@ export const ExpandableTable = ({ data }) => {
             <CardBody>
               <CardTitle className="text-white" tag="h4">
                 <Music size={20} /> TikTok
-                {data.tt_not_found ||
-                  (data.tt_not_scraped && (
-                    <>
-                      <AlertCircle
-                        size={18}
-                        className="text-warning vertical-align-text-bottom"
-                        id={"ttBoxAlert_" + data.id_influencer}
-                        style={{ marginLeft: "7px" }}
-                      />
-                      <UncontrolledTooltip placement="top" target={"ttBoxAlert_" + data.id_influencer}>
-                        <span className="uncontrolled-container">
-                          Ultimo aggiornamento: {moment(data.valid_scrape_tt).format("DD/MM/YYYY - hh:mm")}
-                        </span>
-                      </UncontrolledTooltip>
-                    </>
-                  ))}
               </CardTitle>
               <CardText>
                 {data.username_tt ? (
@@ -240,14 +210,7 @@ export const ExpandableTable = ({ data }) => {
                     <span onClick={() => window.open("https://www.tiktok.com/@" + data.username_tt, "_blank")} className="social-link">
                       @{data.username_tt}
                     </span>
-                    {data.follower_tt && data.likes_tt ? (
-                      <>
-                        <Users size={18} /> <b>{abbreviaNumero(data.follower_tt)}</b>
-                        <span className="float-right">
-                          <Heart size={18} /> <b>{abbreviaNumero(data.likes_tt)}</b>
-                        </span>
-                      </>
-                    ) : null}
+                    <span className="text-secondary">Collegato</span>
                   </>
                 ) : (
                   <span className="text-secondary">Non collegato</span>
@@ -358,22 +321,6 @@ export const editProfileModal = ({ data }) => {
             <CardBody>
               <CardTitle className="text-white" tag="h4">
                 <Music size={20} /> TikTok
-                {data.tt_not_found ||
-                  (data.tt_not_scraped && (
-                    <>
-                      <AlertCircle
-                        size={18}
-                        className="text-warning vertical-align-text-bottom"
-                        id={"ttBoxAlert_" + data.id_influencer}
-                        style={{ marginLeft: "7px" }}
-                      />
-                      <UncontrolledTooltip placement="top" target={"ttBoxAlert_" + data.id_influencer}>
-                        <span className="uncontrolled-container">
-                          Ultimo aggiornamento: {moment(data.valid_scrape_tt).format("DD/MM/YYYY - hh:mm")}
-                        </span>
-                      </UncontrolledTooltip>
-                    </>
-                  ))}
               </CardTitle>
               <CardText>
                 {data.username_tt ? (
@@ -381,14 +328,7 @@ export const editProfileModal = ({ data }) => {
                     <span onClick={() => window.open("https://www.tiktok.com/@" + data.username_tt, "_blank")} className="social-link">
                       @{data.username_tt}
                     </span>
-                    {data.follower_tt && data.likes_tt ? (
-                      <>
-                        <Users size={18} /> <b>{abbreviaNumero(data.follower_tt)}</b>
-                        <span className="float-right">
-                          <Heart size={18} /> <b>{abbreviaNumero(data.likes_tt)}</b>
-                        </span>
-                      </>
-                    ) : null}
+                    <span className="text-secondary">Collegato</span>
                   </>
                 ) : (
                   <span className="text-secondary">Non collegato</span>

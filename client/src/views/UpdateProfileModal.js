@@ -6,43 +6,41 @@ import Axios from "axios"
 import themeConfig from "@configs/themeConfig"
 import Swal from "sweetalert2"
 import ProfileForm from "./form/ProfileForm"
+import _ from "lodash"
 
 const UpdateProfileModal = (props) => {
-  const { profile, setProfile, isOpen, setIsOpen, regions, cities, tag, fetchProfiles } = props
+  const { profile, profileCopy, setProfile, setProfileCopy, isOpen, setIsOpen, regions, cities, tag, fetchProfiles } = props
 
-  const [isSocialChanged, setIsSocialChanged] = useState(false)
-  const [isWaitingScrape, setIsWaitingScrape] = useState(false)
+  const [isInstagramChanged, setIsInstagramChanged] = useState(false)
+  const [isYoutubeChanged, setIsYoutubeChanged] = useState(false)
+  const [isWaitScrapeIG, setIsWaitScrapeIG] = useState(false)
+  const [isWaitScrapeYT, setIsWaitScrapeYT] = useState(false)
   const [originalUsernameIG, setOriginalUsernameIG] = useState(null)
-  const [originalUsernameTT, setOriginalUsernameTT] = useState(null)
   const [originalUsernameYT, setOriginalUsernameYT] = useState(null)
 
   // ** when modal is closed, reset social username
   useEffect(() => {
     if (isOpen == false) {
-      console.log("isOpen useEffect")
-      setIsSocialChanged(false)
+      setIsInstagramChanged(false)
+      setIsYoutubeChanged(false)
       setOriginalUsernameIG(null)
-      setOriginalUsernameTT(null)
       setOriginalUsernameYT(null)
     } else {
+      console.log("editing profile ", profile)
       setOriginalUsernameIG(profile.username_ig)
-      setOriginalUsernameTT(profile.username_tt)
       setOriginalUsernameYT(profile.username_yt)
     }
   }, [isOpen])
 
   // ** check if social username has changed
   useEffect(() => {
-    console.log("update useEffect", profile, originalUsernameIG, originalUsernameTT, originalUsernameYT)
-    if (originalUsernameIG || originalUsernameTT || originalUsernameYT) {
-      // check if original username is different from current username
-      if (originalUsernameIG != profile.username_ig || originalUsernameTT != profile.username_tt || originalUsernameYT != profile.username_yt) {
-        setIsSocialChanged(true)
-      } else {
-        setIsSocialChanged(false)
-      }
-    }
-  }, [profile.username_ig, profile.username_tt, profile.username_yt])
+    //check instagram username
+    if (profile.username_ig && originalUsernameIG != profile.username_ig) setIsInstagramChanged(true)
+    else setIsInstagramChanged(false)
+    //check youtube username
+    if (profile.username_yt && originalUsernameYT != profile.username_yt) setIsYoutubeChanged(true)
+    else setIsYoutubeChanged(false)
+  }, [profile.username_ig, profile.username_yt, originalUsernameIG, originalUsernameYT])
 
   // ** update profile
   const updateProfileData = () => {
@@ -73,9 +71,12 @@ const UpdateProfileModal = (props) => {
     //UPDATE PROFILE
     Axios.post(themeConfig.app.serverUrl + "updateInfluencer", { profile })
       .then((res) => {
-        if (res.data) {
+        if (res.data && res.data.status == "success") {
+          setProfileCopy(profile)
           fetchProfiles()
           handleMessage("success", "Aggiornato", "Profilo aggiornato con successo!")
+        } else {
+          handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
         }
       })
       .catch((err) => {
@@ -85,9 +86,9 @@ const UpdateProfileModal = (props) => {
 
   // ** verify social
   const verifySocial = async () => {
-    if (profile.scrapeRetries + profile.scrapeErrors > 6) {
+    if (profile.scrapeRetries + profile.scrapeErrors > 5) {
       Swal.fire({
-        title: "Limiti tentativi raggiunto: non è possibile verificare i social",
+        title: "Errore: imiti tentativi raggiunto",
         text: "Se i dati inseriti sono corretti puoi saltare la verifica e procedere salvando i dati. Faremo in automatico nuovi tentativi per verificare i suoi social",
         icon: "info",
         showCancelButton: true,
@@ -100,6 +101,7 @@ const UpdateProfileModal = (props) => {
           updateProfileData()
         }
       })
+      return
     }
 
     Swal.fire({
@@ -112,72 +114,40 @@ const UpdateProfileModal = (props) => {
     })
 
     let deep_copy = JSON.parse(JSON.stringify(profile))
+    deep_copy.scrapeRetries = profile.scrapeRetries
+    deep_copy.scrapeErrors = profile.scrapeErrors
     deep_copy.scrapeRetries++
 
-    setIsWaitingScrape(true)
-    let isWaitScrapeIG = false,
-      isWaitScrapeYT = false
-
-    if (originalUsernameYT != profile.username_yt) {
-      isWaitScrapeYT = true
-      deep_copy.iscritti_yt = null
-      console.log("start youtube veirfy...")
-      await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: [profile.username_yt] })
-        .then((res) => {
-          isWaitScrapeYT = false
-          if (!isWaitScrapeIG) {
-            handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
-            setIsWaitingScrape(false)
-          }
-          console.log(res, res.data ? true : false, res.data.status, res.data.status === "success")
-          if (res.data && res.data.status === "success") {
-            setIsSocialChanged(false)
-            setOriginalUsernameYT(profile.username_yt)
-            deep_copy.iscritti_yt = res.data.response[0].subscriber
-            deep_copy.is_new_scrape_yt = true
-            //to-do: update other properties
-          } else {
-            handleMessage("error", "Errore nella verifica Youtube!", "Controlla i dati siano corretti")
-            deep_copy.scrapeErrors++
-          }
-
-          setProfile(deep_copy)
-        })
-        .catch((err) => {
-          handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :(")
-          console.log("CATCH: verifica yt fallita con errore", err)
-          isWaitScrapeYT = false
-          deep_copy.scrapeErrors++
-
-          setProfile(deep_copy)
-        })
-    }
-
-    if (originalUsernameIG != profile.username_ig) {
-      isWaitScrapeIG = true
+    if (isInstagramChanged) {
+      setIsWaitScrapeIG(true)
       deep_copy.follower_ig = null
       deep_copy.engagement_ig = null
-      console.log("start instagram veirfy...")
+      deep_copy.is_new_scrape_ig = true
+      console.log("start instagram verify...")
       await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: [profile.username_ig] })
         .then((res) => {
-          isWaitScrapeIG = false
-          if (!isWaitScrapeYT) {
-            handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
-            setIsWaitingScrape(false)
-          }
-          console.log(res, res.data ? true : false, res.data.status, res.data.status === "success")
-          if (res.data && res.data.status === "success") {
+          setIsWaitScrapeIG(false)
+          let scrapeResult = res.data?.scrapeResult
+          let status = res.data?.status
+          console.log(res.data)
+          if (status === "success") {
+            if (!isWaitScrapeYT) handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
             console.log("ig verificato con successo")
-            setIsSocialChanged(false)
+            setIsInstagramChanged(false)
             setOriginalUsernameIG(profile.username_ig)
-            deep_copy.follower_ig = res.data.scrapeResult[0].follower
-            deep_copy.engagement_ig = res.data.scrapeResult[0].engagement
-            deep_copy.is_new_scrape_ig = true
-            //to-do: update other properties
+            //aggiorna dati scrape del profilo
+            deep_copy.follower_ig = scrapeResult[0].follower
+            deep_copy.engagement_ig = scrapeResult[0].engagement
+            deep_copy.esito_ig = scrapeResult[0].esito
+            deep_copy.utente_trovato_ig = scrapeResult[0].esito
           } else {
+            // if instagram scrape failed
             console.log("verifica ig fallita")
-            handleMessage("error", "Errore nella verifica Instagram!", "Controlla i dati siano corretti")
+            handleMessage("error", "Errore nella verifica Instagram!", "Controlla l'username sia corretto")
             deep_copy.scrapeErrors++
+            //aggiorna dati scrape del profilo
+            deep_copy.esito_ig = scrapeResult[0]?.esito || 0
+            deep_copy.utente_trovato_ig = scrapeResult[0]?.utente_trovato || 0
           }
 
           setProfile(deep_copy)
@@ -185,8 +155,55 @@ const UpdateProfileModal = (props) => {
         .catch((err) => {
           handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :(")
           console.log("CATCH: verifica ig fallita con errore", err)
-          isWaitScrapeIG = false
+          setIsWaitScrapeIG(false)
           deep_copy.scrapeErrors++
+          //aggiorna dati scrape del profilo
+          deep_copy.esito_ig = 0
+          deep_copy.utente_trovato_ig = 0
+
+          setProfile(deep_copy)
+        })
+    }
+
+    if (isYoutubeChanged) {
+      setIsWaitScrapeYT(true)
+      deep_copy.iscritti_yt = null
+      deep_copy.is_new_scrape_yt = true
+      console.log("start youtube verify...")
+      await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: [profile.username_yt] })
+        .then((res) => {
+          setIsWaitScrapeYT(false)
+          let scrapeResult = res.data?.scrapeResult
+          let status = res.data?.status
+          console.log(res.data)
+          // if youtube scrape success
+          if (status === "success") {
+            if (!isWaitScrapeIG) handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
+            setIsYoutubeChanged(false)
+            setOriginalUsernameYT(profile.username_yt)
+            //aggiorna dati scrape del profilo
+            deep_copy.iscritti_yt = scrapeResult[0].subscriber
+            deep_copy.esito_yt = scrapeResult[0].esito
+            deep_copy.utente_trovato_yt = scrapeResult[0].utente_trovato
+          } else {
+            // if youtube scrape failed
+            handleMessage("error", "Errore nella verifica Youtube!", "Controlla l'username sia corretto")
+            deep_copy.scrapeErrors++
+            //aggiorna dati scrape del profilo
+            deep_copy.esito_yt = scrapeResult[0]?.esito || 0
+            deep_copy.utente_trovato_yt = scrapeResult[0]?.utente_trovato || 0
+          }
+
+          setProfile(deep_copy)
+        })
+        .catch((err) => {
+          handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :(")
+          console.log("CATCH: verifica yt fallita con errore", err)
+          setIsWaitScrapeYT(false)
+          deep_copy.scrapeErrors++
+          //aggiorna dati scrape del profilo
+          deep_copy.esito_yt = 0
+          deep_copy.utente_trovato_yt = 0
 
           setProfile(deep_copy)
         })
@@ -209,15 +226,47 @@ const UpdateProfileModal = (props) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} backdrop={true} toggle={null} className="modal-dialog-centered modal-lg">
+      <Modal
+        isOpen={isOpen}
+        backdrop={true}
+        onClosed={() => {
+          //check if there are any unsaved changes
+          if (_.isEqual(profile, profileCopy) == false) {
+            Swal.fire({
+              title: "Modifiche non salvate",
+              text: "Confermi di voler uscire?",
+              icon: "info",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              cancelButtonText: "Si, chiudi",
+              confirmButtonText: "Salva le modifiche",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                setIsOpen(true)
+              }
+            })
+          }
+        }}
+        toggle={null}
+        className="modal-dialog-centered modal-lg"
+      >
         <ModalHeader toggle={() => setIsOpen(false)}>Modifica profilo</ModalHeader>
         <ModalBody>
-          <ProfileForm profile={profile} setProfile={setProfile} regions={regions} cities={cities} tag={tag} isWaitingScrape={isWaitingScrape} />
-          <Button onClick={() => updateProfileData()} color="primary" className="float-right" disabled={isSocialChanged}>
+          <ProfileForm
+            profile={profile}
+            setProfile={setProfile}
+            regions={regions}
+            cities={cities}
+            tag={tag}
+            isWaitScrapeIG={isWaitScrapeIG}
+            isWaitScrapeYT={isWaitScrapeYT}
+          />
+          <Button onClick={() => updateProfileData()} color="primary" className="float-right" disabled={isInstagramChanged || isYoutubeChanged}>
             Aggiorna
           </Button>
-          {isSocialChanged && (
-            <Button onClick={() => verifySocial()} color="primary" className="float-right me-1" disabled={isWaitingScrape}>
+          {(isInstagramChanged || isYoutubeChanged) && (
+            <Button onClick={() => verifySocial()} color="primary" className="float-right me-1" disabled={isWaitScrapeIG || isWaitScrapeYT}>
               Verifica social
             </Button>
           )}

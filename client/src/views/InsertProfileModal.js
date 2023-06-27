@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react"
 import { Plus } from "react-feather"
 import { Button, Modal, ModalHeader, ModalBody, TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap"
 import Swal from "sweetalert2"
+import Axios from "axios"
+import themeConfig from "@configs/themeConfig"
 import ProfileForm from "./form/ProfileForm"
 
 const InsertProfileModal = (props) => {
@@ -9,40 +11,40 @@ const InsertProfileModal = (props) => {
 
   const [active, setActive] = useState(2)
   const [scrapeStatus, setScrapeStatus] = useState("to-do") // ('to-do', 'running', 'success', 'error')
+  const [isWaitScrapeIG, setIsWaitScrapeIG] = useState(false)
+  const [isWaitScrapeYT, setIsWaitScrapeYT] = useState(false)
 
   // ** check profiles scrape status
   useEffect(() => {
-    console.log("profilesArray useEffect")
     let profileToScrape = 0,
-      scrapeSuccess = 0,
-      scrapeError = 0
+      scrapeSuccess = 0
 
     profilesArray.forEach((profile) => {
       //check instagram
       if (profile.username_ig) {
         if (profile.username_ig_verified != profile.username_ig) profileToScrape++
         else if (profile.esito_ig == 1) scrapeSuccess++
-        else if (profile.esito_ig == 0) scrapeError++
       }
       //check youtube
       if (profile.username_yt) {
         if (profile.username_yt_verified != profile.username_yt) profileToScrape++
         else if (profile.esito_yt == 1) scrapeSuccess++
-        else if (profile.esito_yt == 0) scrapeError++
       }
     })
 
     //set scrape status
-    if (profileToScrape > 0) setScrapeStatus("to-do")
-    else if (scrapeError > 0) setScrapeStatus("error")
+    let counter = parseInt(profilesArray.scrapeRetries) + parseInt(profilesArray.scrapeErrors)
+    if (isWaitScrapeIG || isWaitScrapeYT) setScrapeStatus("running")
+    else if (counter > 6) setScrapeStatus("error")
+    else if (profileToScrape > 0) setScrapeStatus("to-do")
     else if (scrapeSuccess > 0) setScrapeStatus("success")
   }, [profilesArray])
 
   // ** verify social
-  const verifySocial = () => {
-    if (profilesArray.scrapeRetries + profilesArray.scrapeErrors > 6) {
+  const verifySocial = async () => {
+    if (scrapeStatus == "error") {
       Swal.fire({
-        title: "Limiti tentativi raggiunto: non è possibile verificare i social",
+        title: "Errore: limiti tentativi raggiunto",
         text: "Se i dati inseriti sono corretti puoi saltare la verifica e procedere inserendo i profili. Faremo in automatico nuovi tentativi per verificare i suoi social",
         icon: "info",
         showCancelButton: true,
@@ -55,17 +57,22 @@ const InsertProfileModal = (props) => {
           insertProfile()
         }
       })
+      return
     }
 
     console.log("verifing profile(s): ", profilesArray)
 
     //get profile to scrape
-    let profileToScrapeIG = profilesArray.filter((p) => p.username_ig && (p.username_ig != p.username_ig_verified || p.esito_ig == 0))
-    let profileToScrapeYT = profilesArray.filter((p) => p.username_yt && (p.username_yt != p.username_yt_verified || p.esito_yt == 0))
+    let profileToScrapeIG = profilesArray
+      .filter((p) => p.username_ig && (p.username_ig != p.username_ig_verified || p.esito_ig == 0))
+      .map((p) => p.username_ig)
+    let profileToScrapeYT = profilesArray
+      .filter((p) => p.username_yt && (p.username_yt != p.username_yt_verified || p.esito_yt == 0))
+      .map((p) => p.username_yt)
 
     let deep_copy = JSON.parse(JSON.stringify(profilesArray))
-    let isWaitScrapeIG = false,
-      isWaitScrapeYT = false
+    deep_copy.scrapeRetries = profilesArray.scrapeRetries
+    deep_copy.scrapeErrors = profilesArray.scrapeErrors
 
     if (profileToScrapeIG.length > 0 || profileToScrapeYT.length > 0) {
       Swal.fire({
@@ -82,72 +89,153 @@ const InsertProfileModal = (props) => {
 
     //check profile and start ig scrape
     if (profileToScrapeIG.length > 0) {
-      isWaitScrapeIG = true
+      setIsWaitScrapeIG(true)
       setScrapeStatus("running")
       console.log("start scrape ig")
 
-      //simulate scrape
-      window.setTimeout(() => {
-        console.log("scrape ig done")
-        if (false) deep_copy.scrapeErrors // to-do: if error increase counter
-        isWaitScrapeIG = false
-        for (let i = 0; i < deep_copy.length; i++) {
-          if (deep_copy[i].username_ig) {
-            deep_copy[i].username_ig_verified = deep_copy[i].username_ig
-            deep_copy[i].esito_ig = 1
-            deep_copy[i].follower_ig = 45000
-            deep_copy[i].engagement_ig = 3
-            deep_copy[i].is_new_scrape_ig = true
-            //to-do: update other properties
+      await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: profileToScrapeIG })
+        .then((res) => {
+          console.log("scrape ig done")
+          console.log(res.data)
+          setIsWaitScrapeIG(false)
+          let scrapeResult = res.data?.scrapeResult
+          let status = res.data?.status
+          //if youtube scrape has finished
+          if (!isWaitScrapeYT) {
+            setIsOpen(true)
+            if (status === "success") handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
           }
-        }
-        if (!isWaitScrapeIG && !isWaitScrapeYT) {
-          handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
+          // if instagram scrape failed
+          if (status === "warning" || status === "error") {
+            console.log("verifica ig fallita")
+            handleMessage("error", "Errore nella verifica di alcuni profili Instagram!", "Controlla che gli username siano corretti")
+            deep_copy.scrapeErrors++
+          }
+
+          //update profile with scrape data
+          let index = 0
+          for (let i = 0; i < deep_copy.length; i++) {
+            if (deep_copy[i].username_ig && (deep_copy[i].username_ig != deep_copy[i].username_ig_verified || deep_copy[i].esito_ig == 0)) {
+              deep_copy[i].esito_ig = scrapeResult[index]?.esito || 0
+              deep_copy[i].utente_trovato_ig = scrapeResult[index]?.utente_trovato || 0
+              deep_copy[i].follower_ig = scrapeResult[index]?.follower
+              deep_copy[i].engagement_ig = scrapeResult[index]?.engagement
+              if (deep_copy[i].esito_ig == 1 && deep_copy[i].utente_trovato_ig == 1) deep_copy[i].username_ig_verified = deep_copy[i].username_ig
+
+              index++
+            }
+          }
 
           setProfilesArray(deep_copy)
-          setIsOpen(true)
-        }
-      }, 3000)
+        })
+        .catch((err) => {
+          console.log("CATCH: verifica ig fallita", err)
+          handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :(")
+          setIsWaitScrapeIG(false)
+          deep_copy.scrapeErrors++
+          setProfilesArray(deep_copy)
+        })
     }
 
     //check profile and start yt scrape
     if (profileToScrapeYT.length > 0) {
-      isWaitScrapeYT = true
+      setIsWaitScrapeYT(true)
       setScrapeStatus("running")
       console.log("start scrape yt")
 
-      //simulate scrape
-      window.setTimeout(() => {
-        console.log("scrape yt done")
-        if (false) deep_copy.scrapeErrors // to-do: if error increase counter
-        isWaitScrapeYT = false
-        for (let i = 0; i < deep_copy.length; i++) {
-          if (deep_copy[i].username_yt) {
-            deep_copy[i].username_yt_verified = deep_copy[i].username_yt
-            deep_copy[i].esito_yt = 1
-            deep_copy[i].iscritti_yt = 23000
-            deep_copy[i].is_new_scrape_yt = true
-            //to-do: update other properties
+      await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: profileToScrapeYT })
+        .then((res) => {
+          console.log("scrape yt done")
+          console.log(res.data)
+          setIsWaitScrapeYT(false)
+          let scrapeResult = res.data?.scrapeResult
+          let status = res.data?.status
+          //if instagram scrape has finished
+          if (!isWaitScrapeIG) {
+            setIsOpen(true)
+            if (status === "success") handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
           }
-        }
-        if (!isWaitScrapeIG && !isWaitScrapeYT) {
-          handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
+          // if youtube scrape failed
+          if (status === "warning" || status === "error") {
+            console.log("verifica yt fallita")
+            handleMessage("error", "Errore nella verifica di alcuni canali Youtube!", "Controlla che gli username siano corretti")
+            deep_copy.scrapeErrors++
+          }
+
+          //update profile with scrape data
+          let index = 0
+          for (let i = 0; i < deep_copy.length; i++) {
+            if (deep_copy[i].username_yt && (deep_copy[i].username_yt != deep_copy[i].username_yt_verified || deep_copy[i].esito_yt == 0)) {
+              deep_copy[i].esito_yt = scrapeResult[index]?.esito || 0
+              deep_copy[i].utente_trovato_yt = scrapeResult[index]?.utente_trovato || 0
+              deep_copy[i].iscritti_yt = scrapeResult[index]?.subscriber
+              if (deep_copy[i].esito_yt == 1 && deep_copy[i].utente_trovato_yt == 1) deep_copy[i].username_yt_verified = deep_copy[i].username_yt
+
+              index++
+            }
+          }
+
           setProfilesArray(deep_copy)
-          setIsOpen(true)
-        }
-      }, 5000)
+        })
+        .catch((err) => {
+          console.log("CATCH: verifica yt fallita", err)
+          handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :(")
+          setIsWaitScrapeYT(false)
+          deep_copy.scrapeErrors++
+          setProfilesArray(deep_copy)
+        })
     }
   }
 
   // ** insert new profile
   const insertProfile = () => {
     console.log("inserting profile(s): ", profilesArray)
-    setIsOpen(false)
-    let empty = [emptyProfileObject]
-    empty.scrapeRetries = 0
-    empty.scrapeErrors = 0
-    setProfilesArray(empty)
-    fetchProfiles()
+    // ** CHECK IF REQUIRED FIELDS ARE FILLED
+
+    for (let i = 0; i < profilesArray.length; i++) {
+      const profile = profilesArray[i]
+
+      // contatti
+      if (profile.contatti == null || profile.contatti == "") {
+        handleMessage("info", "Contatto mancante!", "Completa il campo contatti nel " + (i + 1) + " profilo prima di continuare")
+        return
+      }
+      // interessi
+      if (profile.interessi == null || profile.interessi == "") {
+        handleMessage("info", "Interessi mancanti!", "Completa il campo interessi nel " + (i + 1) + " profilo prima di continuare")
+        return
+      }
+      // at least one social username
+      if (
+        (profile.username_ig == null || profile.username_ig == "") &&
+        (profile.username_tt == null || profile.username_tt == "") &&
+        (profile.username_yt == null || profile.username_yt == "")
+      ) {
+        handleMessage("info", "Social mancante!", "Inserisci almeno un username di un social nel " + (i + 1) + " profilo prima di continuare")
+        return
+      }
+    }
+
+    //INSERT PROFILES
+    Axios.post(themeConfig.app.serverUrl + "insertInfluencers", { profilesArray })
+      .then((res) => {
+        console.log(res.data)
+        if (res.data && res.data.status == "success") {
+          setIsOpen(false)
+          let empty = [emptyProfileObject]
+          empty.scrapeRetries = 0
+          empty.scrapeErrors = 0
+          setProfilesArray(empty)
+          fetchProfiles()
+          handleMessage("success", "Aggiornato", "Profili inseriti con successo!")
+        } else {
+          handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+      })
   }
 
   const toggle = (tab) => {
@@ -194,7 +282,11 @@ const InsertProfileModal = (props) => {
               <NavLink
                 active={active == "1"}
                 onClick={() => {
-                  setProfilesArray([...profilesArray, emptyProfileObject])
+                  let deep_copy = JSON.parse(JSON.stringify(profilesArray))
+                  deep_copy.push(emptyProfileObject)
+                  deep_copy.scrapeRetries = profilesArray.scrapeRetries
+                  deep_copy.scrapeErrors = profilesArray.scrapeErrors
+                  setProfilesArray(deep_copy)
                 }}
               >
                 <Plus size={18} />
@@ -210,7 +302,8 @@ const InsertProfileModal = (props) => {
                     setProfile={(edited) => {
                       let deep_copy = JSON.parse(JSON.stringify(profilesArray))
                       deep_copy[index] = edited
-                      console.log(deep_copy)
+                      deep_copy.scrapeRetries = profilesArray.scrapeRetries
+                      deep_copy.scrapeErrors = profilesArray.scrapeErrors
                       setProfilesArray(deep_copy)
                     }}
                     regions={regions}
@@ -218,7 +311,8 @@ const InsertProfileModal = (props) => {
                     tag={tag}
                     tabId={2 + index}
                     activeTab={active}
-                    isWaitingScrape={scrapeStatus == "running" ? true : false}
+                    isWaitScrapeIG={isWaitScrapeIG}
+                    isWaitScrapeYT={isWaitScrapeYT}
                   />
                 </TabPane>
               )
