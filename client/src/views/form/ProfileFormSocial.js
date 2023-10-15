@@ -20,7 +20,7 @@ const logo_tiktok = require("@src/assets/images/logo/tiktok.png").default
 const logo_youtube = require("@src/assets/images/logo/youtube.png").default
 
 const ProfileFormSocial = (props) => {
-  const { profile, setProfile, tabId, isWaitScrapeIG, isWaitScrapeYT } = props
+  const { isSocialActive, profile, setProfile, tabId, isWaitScrapeIG, isWaitScrapeYT } = props
 
   return (
     <Fragment>
@@ -52,54 +52,56 @@ const ProfileFormSocial = (props) => {
                     }}
                   />
                 </InputGroup>
-                <div className="social-container justify-content-around pt-75">
-                  <div className="d-flex align-items-start me-2">
-                    <Badge color="light-primary" className="rounded p-75">
-                      <Users className="font-medium-2" />
-                    </Badge>
-                    {isWaitScrapeIG == true ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">
-                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
-                        </h4>
-                        <small className="text-info">Verifica in corso...</small>
-                      </div>
-                    ) : profile.follower_ig != null ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">{abbreviaNumero(profile.follower_ig)}</h4>
-                        <small className="text-success">Verificato</small>
-                      </div>
-                    ) : (
-                      <div className="ms-75">
-                        <h4 className="mb-0">?</h4>
-                        <small className="text-danger">Non verificato</small>
-                      </div>
-                    )}
+                {isSocialActive && (
+                  <div className="social-container justify-content-around pt-75">
+                    <div className="d-flex align-items-start me-2">
+                      <Badge color="light-primary" className="rounded p-75">
+                        <Users className="font-medium-2" />
+                      </Badge>
+                      {isWaitScrapeIG == true ? (
+                        <div className="ms-75">
+                          <h4 className="mb-0">
+                            <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
+                          </h4>
+                          <small className="text-info">Verifica in corso...</small>
+                        </div>
+                      ) : profile.follower_ig != null ? (
+                        <div className="ms-75">
+                          <h4 className="mb-0">{abbreviaNumero(profile.follower_ig)}</h4>
+                          <small className="text-success">Verificato</small>
+                        </div>
+                      ) : (
+                        <div className="ms-75">
+                          <h4 className="mb-0">?</h4>
+                          <small className="text-danger">Non verificato</small>
+                        </div>
+                      )}
+                    </div>
+                    <div className="d-flex align-items-start">
+                      <Badge color="light-primary" className="rounded p-75">
+                        <Star className="font-medium-2" />
+                      </Badge>
+                      {isWaitScrapeIG == true ? (
+                        <div className="ms-75">
+                          <h4 className="mb-0">
+                            <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
+                          </h4>
+                          <small className="text-info">Verifica in corso...</small>
+                        </div>
+                      ) : profile.engagement_ig != null ? (
+                        <div className="ms-75">
+                          <h4 className="mb-0">{profile.engagement_ig}%</h4>
+                          <small className="text-success">Verificato</small>
+                        </div>
+                      ) : (
+                        <div className="ms-75">
+                          <h4 className="mb-0">?</h4>
+                          <small className="text-danger">Non verificato</small>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="d-flex align-items-start">
-                    <Badge color="light-primary" className="rounded p-75">
-                      <Star className="font-medium-2" />
-                    </Badge>
-                    {isWaitScrapeIG == true ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">
-                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
-                        </h4>
-                        <small className="text-info">Verifica in corso...</small>
-                      </div>
-                    ) : profile.engagement_ig != null ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">{profile.engagement_ig}%</h4>
-                        <small className="text-success">Verificato</small>
-                      </div>
-                    ) : (
-                      <div className="ms-75">
-                        <h4 className="mb-0">?</h4>
-                        <small className="text-danger">Non verificato</small>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
               </>
             )}
           </div>
@@ -244,31 +246,33 @@ const ProfileFormSocial = (props) => {
                     }}
                   />
                 </InputGroup>
-                <div className="social-container justify-content-around pt-75">
-                  <div className="d-flex align-items-start me-2">
-                    <Badge color="light-primary" className="rounded p-75">
-                      <Users className="font-medium-2" />
-                    </Badge>
-                    {isWaitScrapeYT == true ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">
-                          <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
-                        </h4>
-                        <small className="text-info">Verifica in corso...</small>
-                      </div>
-                    ) : profile.iscritti_yt != null ? (
-                      <div className="ms-75">
-                        <h4 className="mb-0">{abbreviaNumero(profile.iscritti_yt)}</h4>
-                        <small className="text-success">Verificato</small>
-                      </div>
-                    ) : (
-                      <div className="ms-75">
-                        <h4 className="mb-0">?</h4>
-                        <small className="text-danger">Non verificato</small>
-                      </div>
-                    )}
+                {isSocialActive && (
+                  <div className="social-container justify-content-around pt-75">
+                    <div className="d-flex align-items-start me-2">
+                      <Badge color="light-primary" className="rounded p-75">
+                        <Users className="font-medium-2" />
+                      </Badge>
+                      {isWaitScrapeYT == true ? (
+                        <div className="ms-75">
+                          <h4 className="mb-0">
+                            <Spinner style={{ width: "1.4rem", height: "1.4rem" }} />
+                          </h4>
+                          <small className="text-info">Verifica in corso...</small>
+                        </div>
+                      ) : profile.iscritti_yt != null ? (
+                        <div className="ms-75">
+                          <h4 className="mb-0">{abbreviaNumero(profile.iscritti_yt)}</h4>
+                          <small className="text-success">Verificato</small>
+                        </div>
+                      ) : (
+                        <div className="ms-75">
+                          <h4 className="mb-0">?</h4>
+                          <small className="text-danger">Non verificato</small>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             )}
           </div>

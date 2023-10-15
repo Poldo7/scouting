@@ -1,10 +1,12 @@
-import { AlertCircle, Calendar, Database, Heart, Instagram, Mail, Map, MapPin, Music, User, Users, Youtube } from "react-feather"
+import { AlertCircle, Calendar, FileText, Heart, Instagram, Mail, Map, MapPin, Music, User, Users, Youtube } from "react-feather"
 import { Badge, Card, CardBody, CardText, CardTitle, Col, Row, UncontrolledTooltip } from "reactstrap"
 
 // ** Third Party Components
 import Avatar from "@components/avatar"
 import moment from "moment"
 import { abbreviaNumero } from "./utils"
+
+const isSocialActive = false
 
 /**
  *
@@ -26,38 +28,19 @@ export const columns = [
       <div className="d-flex align-items-center cursor-initial">
         <div className="user-info text-truncate ms-1">
           <span className="d-block fw-bold text-truncate">
-            {row.ig_not_found || row.yt_not_found ? (
-              <>
-                <AlertCircle size={16} className="me-50 text-danger vertical-align-text-bottom" id={"rowAlert_" + row.id_influencer} />
-                <UncontrolledTooltip placement="top" target={"rowAlert_" + row.id_influencer}>
-                  <div className="uncontrolled-container">
-                    <span style={{ marginBottom: "10px" }}>Gli username per i seguenti social non sono più validi:</span>
-                    {row.ig_not_found && (
-                      <span>
-                        <Instagram size={16} /> {row.username_ig}
-                      </span>
-                    )}
-                    {row.yt_not_found && (
-                      <span>
-                        <Youtube size={16} /> {row.username_yt}
-                      </span>
-                    )}
-                  </div>
-                </UncontrolledTooltip>
-              </>
-            ) : (
-              (row.ig_not_scraped || row.yt_not_scraped) && (
+            {isSocialActive == true &&
+              (row.ig_not_found || row.yt_not_found ? (
                 <>
-                  <AlertCircle size={16} className="me-50 text-warning vertical-align-text-bottom" id={"rowWarning_" + row.id_influencer} />
-                  <UncontrolledTooltip placement="top" target={"rowWarning_" + row.id_influencer}>
+                  <AlertCircle size={16} className="me-50 text-danger vertical-align-text-bottom" id={"rowAlert_" + row.id_influencer} />
+                  <UncontrolledTooltip placement="top" target={"rowAlert_" + row.id_influencer}>
                     <div className="uncontrolled-container">
-                      <span style={{ marginBottom: "10px" }}>A causa di un errore i seguenti social non sono stati aggiornati:</span>
-                      {row.ig_not_scraped && (
+                      <span style={{ marginBottom: "10px" }}>Gli username per i seguenti social non sono più validi:</span>
+                      {row.ig_not_found && (
                         <span>
                           <Instagram size={16} /> {row.username_ig}
                         </span>
                       )}
-                      {row.yt_not_scraped && (
+                      {row.yt_not_found && (
                         <span>
                           <Youtube size={16} /> {row.username_yt}
                         </span>
@@ -65,8 +48,28 @@ export const columns = [
                     </div>
                   </UncontrolledTooltip>
                 </>
-              )
-            )}
+              ) : (
+                (row.ig_not_scraped || row.yt_not_scraped) && (
+                  <>
+                    <AlertCircle size={16} className="me-50 text-warning vertical-align-text-bottom" id={"rowWarning_" + row.id_influencer} />
+                    <UncontrolledTooltip placement="top" target={"rowWarning_" + row.id_influencer}>
+                      <div className="uncontrolled-container">
+                        <span style={{ marginBottom: "10px" }}>A causa di un errore i seguenti social non sono stati aggiornati:</span>
+                        {row.ig_not_scraped && (
+                          <span>
+                            <Instagram size={16} /> {row.username_ig}
+                          </span>
+                        )}
+                        {row.yt_not_scraped && (
+                          <span>
+                            <Youtube size={16} /> {row.username_yt}
+                          </span>
+                        )}
+                      </div>
+                    </UncontrolledTooltip>
+                  </>
+                )
+              ))}
             {row.username_ig ? row.username_ig : row.username_tt ? row.username_tt : row.username_yt}
           </span>
           <small>{row.post}</small>
@@ -190,13 +193,15 @@ export const ExpandableTable = ({ data }) => {
               <small>{data.contatti || <span className="text-secondary">?</span>}</small>
             </div>
           </div>
-          <div className="d-flex">
-            <Avatar color="light-primary" className="rounded me-1" icon={<Database size={18} />} />
-            <div>
-              <h6 className="mb-0">Data inserimento</h6>
-              <small>{moment(data.data_inserimento).format("DD/MM/YY")}</small>
+          {data.stato == 2 && data.scadenza_contratto != null && (
+            <div className="d-flex">
+              <Avatar color="light-primary" className="rounded me-1" icon={<FileText size={18} />} />
+              <div>
+                <h6 className="mb-0">Scadenza contratto</h6>
+                <small>{moment(data.scadenza_contratto).format("DD/MM/YY")}</small>
+              </div>
             </div>
-          </div>
+          )}
         </Col>
         <Col lg="3" md="6" sm="12">
           <Card color="dark" inverse className="social-card">
@@ -224,22 +229,23 @@ export const ExpandableTable = ({ data }) => {
             <CardBody>
               <CardTitle className="text-white" tag="h4">
                 <Youtube size={20} /> Youtube
-                {data.yt_not_found ||
-                  (data.yt_not_scraped && (
-                    <>
-                      <AlertCircle
-                        size={18}
-                        className="text-warning vertical-align-text-bottom"
-                        id={"ytBoxAlert_" + data.id_influencer}
-                        style={{ marginLeft: "7px" }}
-                      />
-                      <UncontrolledTooltip placement="top" target={"ytBoxAlert_" + data.id_influencer}>
-                        <span className="uncontrolled-container">
-                          Ultimo aggiornamento: {moment(data.valid_scrape_yt).format("DD/MM/YYYY - hh:mm")}
-                        </span>
-                      </UncontrolledTooltip>
-                    </>
-                  ))}
+                {isSocialActive == true &&
+                  (data.yt_not_found ||
+                    (data.yt_not_scraped && (
+                      <>
+                        <AlertCircle
+                          size={18}
+                          className="text-warning vertical-align-text-bottom"
+                          id={"ytBoxAlert_" + data.id_influencer}
+                          style={{ marginLeft: "7px" }}
+                        />
+                        <UncontrolledTooltip placement="top" target={"ytBoxAlert_" + data.id_influencer}>
+                          <span className="uncontrolled-container">
+                            Ultimo aggiornamento: {moment(data.valid_scrape_yt).format("DD/MM/YYYY - hh:mm")}
+                          </span>
+                        </UncontrolledTooltip>
+                      </>
+                    )))}
               </CardTitle>
               <CardText>
                 {data.username_yt ? (

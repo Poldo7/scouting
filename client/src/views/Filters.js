@@ -14,6 +14,7 @@ const animatedComponents = makeAnimated()
 
 const Filters = (props) => {
   const {
+    isSocialActive,
     // ** default profile data
     data,
     // ** update filtered profile data
@@ -292,72 +293,76 @@ const Filters = (props) => {
                 </div>
               </div>
             </Col>
-            <Col className="mb-2" xl="3" md="6" sm="12">
-              <Label className="form-label" for="follower_ig" style={{ marginBottom: "25px" }}>
-                <Instagram size={16} className="vertical-align-text-bottom" style={{ marginRight: "5px" }} /> Follower Instagram
-              </Label>
-              <div style={{ padding: "0 20px 0 10px" }} className="instagram-range">
-                <InputRange
-                  maxValue={followerMaxIG}
-                  minValue={0}
-                  step={5000}
-                  value={{ min: filterFollowerMinIG, max: filterFollowerMaxIG }}
-                  formatLabel={(value) => abbreviaNumero(value)}
-                  onChange={(value) => {
-                    if (value.max - value.min < followerMaxIG / 10) return
-                    setFilterFollowerMinIG(value.min > 0 ? value.min : 0)
-                    setFilterFollowerMaxIG(value.max < followerMaxIG ? value.max : followerMaxIG)
-                    if (!isInstragramChecked && (value.min > 0 || value.max < followerMaxIG)) {
-                      setIsInstragramChecked(true)
-                    }
-                  }}
-                />
-              </div>
-            </Col>
-            <Col className="mb-2" xl="3" md="6" sm="12">
-              <Label className="form-label" for="engagement_ig" style={{ marginBottom: "25px" }}>
-                <Instagram size={16} className="vertical-align-text-bottom" style={{ marginRight: "5px" }} /> E.R Instagram
-              </Label>
-              <div style={{ padding: "0 20px 0 10px" }} className="instagram-range">
-                <InputRange
-                  maxValue={engagementMaxIG}
-                  minValue={0}
-                  step={1}
-                  value={{ min: filterEngagementMinIG, max: filterEngagementMaxIG }}
-                  formatLabel={(value) => `${value}%`}
-                  onChange={(value) => {
-                    if (value.max - value.min < 1) return
-                    setFilterEngagementMinIG(value.min > 0 ? value.min : 0)
-                    setFilterEngagementMaxIG(value.max < engagementMaxIG ? value.max : engagementMaxIG)
-                    if (!isInstragramChecked && (value.min > 0 || value.max < engagementMaxIG)) {
-                      setIsInstragramChecked(true)
-                    }
-                  }}
-                />
-              </div>
-            </Col>
-            <Col className="mb-2" xl="3" md="6" sm="12">
-              <Label className="form-label" for="subscriber_yt" style={{ marginBottom: "25px" }}>
-                <Youtube size={16} className="vertical-align-text-bottom" style={{ marginRight: "5px" }} /> Iscritti Youtube
-              </Label>
-              <div style={{ padding: "0 20px 0 10px" }} className="youtube-range">
-                <InputRange
-                  maxValue={subscriberMaxYT}
-                  minValue={0}
-                  step={5000}
-                  value={{ min: filterSubscriberMinYT, max: filterSubscriberMaxYT }}
-                  formatLabel={(value) => abbreviaNumero(value)}
-                  onChange={(value) => {
-                    if (value.max - value.min < subscriberMaxYT / 10) return
-                    setFilterSubscriberMinYT(value.min > 0 ? value.min : 0)
-                    setFilterSubscriberMaxYT(value.max < subscriberMaxYT ? value.max : subscriberMaxYT)
-                    if (!isYoutubeChecked && (value.min > 0 || value.max < subscriberMaxYT)) {
-                      setIsYoutubeChecked(true)
-                    }
-                  }}
-                />
-              </div>
-            </Col>
+            {isSocialActive == true && (
+              <>
+                <Col className="mb-2" xl="3" md="6" sm="12">
+                  <Label className="form-label" for="follower_ig" style={{ marginBottom: "25px" }}>
+                    <Instagram size={16} className="vertical-align-text-bottom" style={{ marginRight: "5px" }} /> Follower Instagram
+                  </Label>
+                  <div style={{ padding: "0 20px 0 10px" }} className="instagram-range">
+                    <InputRange
+                      maxValue={followerMaxIG}
+                      minValue={0}
+                      step={5000}
+                      value={{ min: filterFollowerMinIG, max: filterFollowerMaxIG }}
+                      formatLabel={(value) => abbreviaNumero(value)}
+                      onChange={(value) => {
+                        if (value.max - value.min < followerMaxIG / 10) return
+                        setFilterFollowerMinIG(value.min > 0 ? value.min : 0)
+                        setFilterFollowerMaxIG(value.max < followerMaxIG ? value.max : followerMaxIG)
+                        if (!isInstragramChecked && (value.min > 0 || value.max < followerMaxIG)) {
+                          setIsInstragramChecked(true)
+                        }
+                      }}
+                    />
+                  </div>
+                </Col>
+                <Col className="mb-2" xl="3" md="6" sm="12">
+                  <Label className="form-label" for="engagement_ig" style={{ marginBottom: "25px" }}>
+                    <Instagram size={16} className="vertical-align-text-bottom" style={{ marginRight: "5px" }} /> E.R Instagram
+                  </Label>
+                  <div style={{ padding: "0 20px 0 10px" }} className="instagram-range">
+                    <InputRange
+                      maxValue={engagementMaxIG}
+                      minValue={0}
+                      step={1}
+                      value={{ min: filterEngagementMinIG, max: filterEngagementMaxIG }}
+                      formatLabel={(value) => `${value}%`}
+                      onChange={(value) => {
+                        if (value.max - value.min < 1) return
+                        setFilterEngagementMinIG(value.min > 0 ? value.min : 0)
+                        setFilterEngagementMaxIG(value.max < engagementMaxIG ? value.max : engagementMaxIG)
+                        if (!isInstragramChecked && (value.min > 0 || value.max < engagementMaxIG)) {
+                          setIsInstragramChecked(true)
+                        }
+                      }}
+                    />
+                  </div>
+                </Col>
+                <Col className="mb-2" xl="3" md="6" sm="12">
+                  <Label className="form-label" for="subscriber_yt" style={{ marginBottom: "25px" }}>
+                    <Youtube size={16} className="vertical-align-text-bottom" style={{ marginRight: "5px" }} /> Iscritti Youtube
+                  </Label>
+                  <div style={{ padding: "0 20px 0 10px" }} className="youtube-range">
+                    <InputRange
+                      maxValue={subscriberMaxYT}
+                      minValue={0}
+                      step={5000}
+                      value={{ min: filterSubscriberMinYT, max: filterSubscriberMaxYT }}
+                      formatLabel={(value) => abbreviaNumero(value)}
+                      onChange={(value) => {
+                        if (value.max - value.min < subscriberMaxYT / 10) return
+                        setFilterSubscriberMinYT(value.min > 0 ? value.min : 0)
+                        setFilterSubscriberMaxYT(value.max < subscriberMaxYT ? value.max : subscriberMaxYT)
+                        if (!isYoutubeChecked && (value.min > 0 || value.max < subscriberMaxYT)) {
+                          setIsYoutubeChecked(true)
+                        }
+                      }}
+                    />
+                  </div>
+                </Col>
+              </>
+            )}
             <Col className="mb-2" xl="4" md="6" sm="12">
               <Label className="form-label" for="regione">
                 Regione

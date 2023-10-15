@@ -21,6 +21,8 @@ import UpdateProfileModal from "./UpdateProfileModal"
 const MySwal = withReactContent(Swal)
 
 const Home = () => {
+  const isSocialActive = false // to enable/disable scraping bot functionalities
+
   // ** State
   const [currentPage, setCurrentPage] = useState(0)
   const [currentRows, setCurrentRows] = useState([])
@@ -60,6 +62,7 @@ const Home = () => {
     interessiArray: [],
     nome: "",
     eta: "",
+    stato: null,
     regioniArray: [],
     cittaArray: [],
     username_ig: null,
@@ -135,6 +138,7 @@ const Home = () => {
 
   // ** main use effect
   useEffect(() => {
+    console.log("IS_SOCIAL_ACTIVE: ", process.env)
     fetchProfiles()
     getLuoghi()
     getTag()
@@ -359,6 +363,7 @@ const Home = () => {
           </div>
         </CardHeader>
         <Filters
+          isSocialActive={isSocialActive}
           // ** default profile data
           data={data}
           // ** update filtered profile data
@@ -443,9 +448,10 @@ const Home = () => {
         </div>
       </Card>
       {/** SCRAPING STATUS */}
-      <ScrapingStatus influencerNotFound={influencerNotFound} influencerNotScraped={influencerNotScraped} />
+      {isSocialActive == true && <ScrapingStatus influencerNotFound={influencerNotFound} influencerNotScraped={influencerNotScraped} />}
       {/** MODALI */}
       <InsertProfileModal
+        isSocialActive={isSocialActive}
         isOpen={insertModalOpen}
         setIsOpen={setInsertModalOpen}
         profilesArray={insertModalData}
@@ -457,6 +463,7 @@ const Home = () => {
         fetchProfiles={fetchProfiles}
       />
       <UpdateProfileModal
+        isSocialActive={isSocialActive}
         isOpen={updateModalOpen}
         setIsOpen={setUpdateModalOpen}
         profile={updateModalData}

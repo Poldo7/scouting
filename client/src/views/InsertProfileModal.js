@@ -7,7 +7,7 @@ import themeConfig from "@configs/themeConfig"
 import ProfileForm from "./form/ProfileForm"
 
 const InsertProfileModal = (props) => {
-  const { isOpen, setIsOpen, profilesArray, setProfilesArray, emptyProfileObject, regions, cities, tag, fetchProfiles } = props
+  const { isSocialActive, isOpen, setIsOpen, profilesArray, setProfilesArray, emptyProfileObject, regions, cities, tag, fetchProfiles } = props
 
   const [active, setActive] = useState(2)
   const [scrapeStatus, setScrapeStatus] = useState("to-do") // ('to-do', 'running', 'success', 'error')
@@ -195,6 +195,16 @@ const InsertProfileModal = (props) => {
     for (let i = 0; i < profilesArray.length; i++) {
       const profile = profilesArray[i]
 
+      // stato
+      if (profile.stato == null) {
+        handleMessage("info", "Stato mancante!", "Devi indicare se il profilo appartiene ad un agenzia")
+        return
+      }
+      // scadenza contratto
+      if (profile.statoOption?.label == "In domini" && profile.scadenza_contratto == null) {
+        handleMessage("info", "Data termine contratto mancante!", "Devi indicare se la data in cui il contratto con domini scadrà")
+        return
+      }
       // contatti
       if (profile.contatti == null || profile.contatti == "") {
         handleMessage("info", "Contatto mancante!", "Completa il campo contatti nel " + (i + 1) + " profilo prima di continuare")
@@ -298,6 +308,7 @@ const InsertProfileModal = (props) => {
               return (
                 <TabPane tabId={2 + index} key={index}>
                   <ProfileForm
+                    isSocialActive={isSocialActive}
                     profile={profile}
                     setProfile={(edited) => {
                       let deep_copy = JSON.parse(JSON.stringify(profilesArray))
@@ -322,18 +333,20 @@ const InsertProfileModal = (props) => {
             onClick={() => insertProfile()}
             color="primary"
             className="float-right"
-            disabled={scrapeStatus == "to-do" || scrapeStatus == "running" ? true : false}
+            disabled={isSocialActive && (scrapeStatus == "to-do" || scrapeStatus == "running") ? true : false}
           >
             Inserisci
           </Button>
-          <Button
-            onClick={() => verifySocial()}
-            color="primary"
-            className="float-right me-1"
-            disabled={scrapeStatus == "running" || scrapeStatus == "success" ? true : false}
-          >
-            Verifica social
-          </Button>
+          {isSocialActive && (
+            <Button
+              onClick={() => verifySocial()}
+              color="primary"
+              className="float-right me-1"
+              disabled={scrapeStatus == "running" || scrapeStatus == "success" ? true : false}
+            >
+              Verifica social
+            </Button>
+          )}
         </ModalBody>
       </Modal>
     </>

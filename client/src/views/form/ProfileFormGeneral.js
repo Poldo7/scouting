@@ -15,6 +15,10 @@ import Select from "react-select"
 import makeAnimated from "react-select/animated"
 import { selectThemeColors } from "@utils"
 import Swal from "sweetalert2"
+import Flatpickr from "react-flatpickr"
+const Italian = require("flatpickr/dist/l10n/it.js").default.it
+// ** Styles
+import "@styles/react/libs/flatpickr/flatpickr.scss"
 
 const animatedComponents = makeAnimated()
 
@@ -27,6 +31,7 @@ const ProfileFormGeneral = (props) => {
   const [interessiValue, setInteressiValue] = useState(null)
   const [regioniValue, setRegioniValue] = useState(null)
   const [cittaValue, setCittaValue] = useState(null)
+  const [scadenzaContratto, setScadenzaContratto] = useState(null)
 
   // ** in case of multiple forms (insert mode)
   //      =>  we must set multi-selects values only when we select this specific tab (there can be more than one), otherwise multi-selects crash
@@ -35,6 +40,7 @@ const ProfileFormGeneral = (props) => {
       setInteressiValue(profile.interessiArray)
       setRegioniValue(profile.regioniArray)
       setCittaValue(profile.cittaArray)
+      setScadenzaContratto(profile.scadenza_contratto)
     }
   }, [activeTab])
 
@@ -78,7 +84,7 @@ const ProfileFormGeneral = (props) => {
         <small className="text-muted">Inserisci i campi obbligatori (*) per continuare</small>
       </div>
       <Row>
-        <Col md="6" className="mb-2">
+        <Col md="12" className="mb-2">
           <Label className="form-label gray-label" for="interessi">
             Contatti *
           </Label>
@@ -92,6 +98,7 @@ const ProfileFormGeneral = (props) => {
               deep_copy.contatti = e.target.value
               setProfile(deep_copy)
             }}
+            aria-rowcount={1}
           />
         </Col>
         <Col md="6" className="mb-2">
@@ -119,6 +126,35 @@ const ProfileFormGeneral = (props) => {
             placeholder="Stato *"
             id="stato"
           />
+        </Col>
+        <Col md="6" className="mb-2">
+          {profile.statoOption?.label == "In domini" && (
+            <>
+              <Label className="form-label gray-label" for="interessi">
+                Scadenza contratto *
+              </Label>
+              <Flatpickr
+                className="form-control"
+                value={scadenzaContratto}
+                onChange={(value) => {
+                  console.log(value)
+                  let deep_copy = JSON.parse(JSON.stringify(profile))
+                  deep_copy.scadenza_contratto = value
+                  setScadenzaContratto(value)
+                  setProfile(deep_copy)
+                }}
+                options={{
+                  altInput: true,
+                  altFormat: "j F, Y",
+                  dateFormat: "d-m-Y",
+                  locale: {
+                    ...Italian,
+                  },
+                }}
+                id={"scadenza_" + tabId}
+              />
+            </>
+          )}
         </Col>
         <Col md="12" className="mb-3">
           <Label className="form-label gray-label" for="interessi">

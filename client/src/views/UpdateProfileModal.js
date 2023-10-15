@@ -9,10 +9,10 @@ import ProfileForm from "./form/ProfileForm"
 import _ from "lodash"
 
 const UpdateProfileModal = (props) => {
-  const { profile, profileCopy, setProfile, setProfileCopy, isOpen, setIsOpen, regions, cities, tag, fetchProfiles } = props
+  const { isSocialActive, profile, profileCopy, setProfile, setProfileCopy, isOpen, setIsOpen, regions, cities, tag, fetchProfiles } = props
 
-  const [isInstagramChanged, setIsInstagramChanged] = useState(false)
-  const [isYoutubeChanged, setIsYoutubeChanged] = useState(false)
+  const [isInstagramToVerify, setIsInstagramToVerify] = useState(false)
+  const [isYoutubeToVerify, setIsYoutubeToVerify] = useState(false)
   const [isWaitScrapeIG, setIsWaitScrapeIG] = useState(false)
   const [isWaitScrapeYT, setIsWaitScrapeYT] = useState(false)
   const [originalUsernameIG, setOriginalUsernameIG] = useState(null)
@@ -21,8 +21,8 @@ const UpdateProfileModal = (props) => {
   // ** when modal is closed, reset social username
   useEffect(() => {
     if (isOpen == false) {
-      setIsInstagramChanged(false)
-      setIsYoutubeChanged(false)
+      setIsInstagramToVerify(false)
+      setIsYoutubeToVerify(false)
       setOriginalUsernameIG(null)
       setOriginalUsernameYT(null)
     } else {
@@ -34,13 +34,13 @@ const UpdateProfileModal = (props) => {
 
   // ** check if social username has changed
   useEffect(() => {
-    //check instagram username
-    if (profile.username_ig && originalUsernameIG != profile.username_ig) setIsInstagramChanged(true)
-    else setIsInstagramChanged(false)
-    //check youtube username
-    if (profile.username_yt && originalUsernameYT != profile.username_yt) setIsYoutubeChanged(true)
-    else setIsYoutubeChanged(false)
-  }, [profile.username_ig, profile.username_yt, originalUsernameIG, originalUsernameYT])
+    //check if instagram username is changed or has null follower
+    if (profile.username_ig && (originalUsernameIG != profile.username_ig || profile.follower_ig == null)) setIsInstagramToVerify(true)
+    else setIsInstagramToVerify(false)
+    //check if youtube username is changed ora has null iscritti
+    if (profile.username_yt && (originalUsernameYT != profile.username_yt || profile.iscritti_yt == null)) setIsYoutubeToVerify(true)
+    else setIsYoutubeToVerify(false)
+  }, [profile.username_ig, profile.username_yt, profile.follower_ig, profile.iscritti_yt, originalUsernameIG, originalUsernameYT])
 
   // ** update profile
   const updateProfileData = () => {
@@ -48,6 +48,16 @@ const UpdateProfileModal = (props) => {
 
     // ** CHECK IF REQUIRED FIELDS ARE FILLED
 
+    // stato
+    if (profile.stato == null) {
+      handleMessage("info", "Stato mancante!", "Devi indicare se il profilo appartiene ad un agenzia")
+      return
+    }
+    // scadenza contratto
+    if (profile.statoOption?.label == "In domini" && profile.scadenza_contratto == null) {
+      handleMessage("info", "Data termine contratto mancante!", "Devi indicare se la data in cui il contratto con domini scadrà")
+      return
+    }
     // contatti
     if (profile.contatti == null || profile.contatti == "") {
       handleMessage("info", "Contatto mancante!", "Completa il campo contatti prima di aggiornare il profilo")
@@ -118,7 +128,7 @@ const UpdateProfileModal = (props) => {
     deep_copy.scrapeErrors = profile.scrapeErrors
     deep_copy.scrapeRetries++
 
-    if (isInstagramChanged) {
+    if (isInstagramToVerify) {
       setIsWaitScrapeIG(true)
       deep_copy.follower_ig = null
       deep_copy.engagement_ig = null
@@ -133,7 +143,7 @@ const UpdateProfileModal = (props) => {
           if (status === "success") {
             if (!isWaitScrapeYT) handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
             console.log("ig verificato con successo")
-            setIsInstagramChanged(false)
+            setIsInstagramToVerify(false)
             setOriginalUsernameIG(profile.username_ig)
             //aggiorna dati scrape del profilo
             deep_copy.follower_ig = scrapeResult[0].follower
@@ -165,7 +175,7 @@ const UpdateProfileModal = (props) => {
         })
     }
 
-    if (isYoutubeChanged) {
+    if (isYoutubeToVerify) {
       setIsWaitScrapeYT(true)
       deep_copy.iscritti_yt = null
       deep_copy.is_new_scrape_yt = true
@@ -179,7 +189,8 @@ const UpdateProfileModal = (props) => {
           // if youtube scrape success
           if (status === "success") {
             if (!isWaitScrapeIG) handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
-            setIsYoutubeChanged(false)
+            console.log("yt verificato con successo")
+            setIsYoutubeToVerify(false)
             setOriginalUsernameYT(profile.username_yt)
             //aggiorna dati scrape del profilo
             deep_copy.iscritti_yt = scrapeResult[0].subscriber
@@ -187,6 +198,7 @@ const UpdateProfileModal = (props) => {
             deep_copy.utente_trovato_yt = scrapeResult[0].utente_trovato
           } else {
             // if youtube scrape failed
+            console.log("verifica yt fallita")
             handleMessage("error", "Errore nella verifica Youtube!", "Controlla l'username sia corretto")
             deep_copy.scrapeErrors++
             //aggiorna dati scrape del profilo
@@ -254,6 +266,7 @@ const UpdateProfileModal = (props) => {
         <ModalHeader toggle={() => setIsOpen(false)}>Modifica profilo</ModalHeader>
         <ModalBody>
           <ProfileForm
+            isSocialActive={isSocialActive}
             profile={profile}
             setProfile={setProfile}
             regions={regions}
@@ -262,10 +275,15 @@ const UpdateProfileModal = (props) => {
             isWaitScrapeIG={isWaitScrapeIG}
             isWaitScrapeYT={isWaitScrapeYT}
           />
-          <Button onClick={() => updateProfileData()} color="primary" className="float-right" disabled={isInstagramChanged || isYoutubeChanged}>
+          <Button
+            onClick={() => updateProfileData()}
+            color="primary"
+            className="float-right"
+            disabled={isSocialActive && (isInstagramToVerify || isYoutubeToVerify)}
+          >
             Aggiorna
           </Button>
-          {(isInstagramChanged || isYoutubeChanged) && (
+          {isSocialActive && (isInstagramToVerify || isYoutubeToVerify) && (
             <Button onClick={() => verifySocial()} color="primary" className="float-right me-1" disabled={isWaitScrapeIG || isWaitScrapeYT}>
               Verifica social
             </Button>
