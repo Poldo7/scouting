@@ -157,6 +157,8 @@ const Home = () => {
           let result = res.data
           console.log(result)
 
+          if (!res.data) return
+
           // ** FILTER
           // set state options for filters
           setTagOptions(result.tagOptions)
