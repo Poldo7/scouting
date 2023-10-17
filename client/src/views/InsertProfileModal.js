@@ -205,6 +205,11 @@ const InsertProfileModal = (props) => {
         handleMessage("info", "Data termine contratto mancante!", "Devi indicare se la data in cui il contratto con domini scadrà")
         return
       }
+      // fee
+      if (profile.fee == null || profile.fee == "") {
+        handleMessage("info", "Fee mancante!", "Devi indicare la fee (%) del profilo")
+        return
+      }
       // contatti
       if (profile.contatti == null || profile.contatti == "") {
         handleMessage("info", "Contatto mancante!", "Completa il campo contatti nel " + (i + 1) + " profilo prima di continuare")
@@ -225,7 +230,7 @@ const InsertProfileModal = (props) => {
         return
       }
     }
-
+    console.log("profilesArray", profilesArray)
     //INSERT PROFILES
     Axios.post(themeConfig.app.serverUrl + "insertInfluencers", { profilesArray })
       .then((res) => {

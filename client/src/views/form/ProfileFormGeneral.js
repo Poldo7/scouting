@@ -128,8 +128,25 @@ const ProfileFormGeneral = (props) => {
           />
         </Col>
         <Col md="6" className="mb-2">
+          <div className="form-floating" style={{ marginTop: "22px" }}>
+            <Cleave
+              className="form-control"
+              placeholder="Fee (%) *"
+              options={{ blocks: [2] }}
+              id="fee"
+              value={profile.fee}
+              onChange={(e) => {
+                let deep_copy = JSON.parse(JSON.stringify(profile))
+                deep_copy.fee = e.target.value
+                setProfile(deep_copy)
+              }}
+            />
+            <label htmlFor="floatingInput">Fee (%) *</label>
+          </div>
+        </Col>
+        <Col md="12">
           {profile.statoOption?.label == "In domini" && (
-            <>
+            <div className="mb-2">
               <Label className="form-label gray-label" for="interessi">
                 Scadenza contratto *
               </Label>
@@ -153,7 +170,23 @@ const ProfileFormGeneral = (props) => {
                 }}
                 id={"scadenza_" + tabId}
               />
-            </>
+            </div>
+          )}
+          {profile.statoOption?.label == "Con agenzia" && (
+            <div className="form-floating mb-2">
+              <Input
+                type="text"
+                id="floatingInput"
+                placeholder="Nome agenzia"
+                value={profile.nome_agenzia}
+                onChange={(e) => {
+                  let deep_copy = JSON.parse(JSON.stringify(profile))
+                  deep_copy.nome_agenzia = e.target.value
+                  setProfile(deep_copy)
+                }}
+              />
+              <label htmlFor="floatingInput">Nome agenzia</label>
+            </div>
           )}
         </Col>
         <Col md="12" className="mb-3">
@@ -299,6 +332,23 @@ const ProfileFormGeneral = (props) => {
               id="citta"
             />
           </div>
+        </Col>
+        <Col md="12" className="mb-2">
+          <Label className="form-label gray-label" for="interessi">
+            Note aggiuntive
+          </Label>
+          <Input
+            type="textarea"
+            id="floatingInput"
+            placeholder="Note aggiuntive"
+            value={profile.note}
+            onChange={(e) => {
+              let deep_copy = JSON.parse(JSON.stringify(profile))
+              deep_copy.note = e.target.value
+              setProfile(deep_copy)
+            }}
+            aria-rowcount={1}
+          />
         </Col>
       </Row>
       <Button color="primary" outline className="btn-next float-right" onClick={() => stepper.next()}>
