@@ -2,7 +2,7 @@ import themeConfig from "@configs/themeConfig"
 import Axios from "axios"
 import React, { useEffect, useState } from "react"
 import { ChevronDown, Edit, Filter, MinusCircle, Plus, RotateCw, Trash, User } from "react-feather"
-import { Button, Card, CardHeader, CardTitle } from "reactstrap"
+import { Button, Card, CardHeader, Input, CardTitle } from "reactstrap"
 // ** Table columns & Expandable Data
 import { columns, ExpandableTable } from "./tableElement"
 
@@ -15,13 +15,15 @@ import withReactContent from "sweetalert2-react-content"
 // ** Custom Components
 import Filters from "./Filters"
 import ScrapingStatus from "./ScrapingStatus"
+import ContractStatus from "./ContractStatus"
 import InsertProfileModal from "./InsertProfileModal"
 import UpdateProfileModal from "./UpdateProfileModal"
 
 const MySwal = withReactContent(Swal)
 
 const Home = () => {
-  const isSocialActive = false // to enable/disable scraping bot functionalities
+  // Is social bot active (false for only insert/update profiles without ig/yt fetch)
+  const [isSocialActive, setIsSocialActive] = useState(false)
 
   // ** State
   const [currentPage, setCurrentPage] = useState(0)
@@ -31,6 +33,8 @@ const Home = () => {
   const [filteredData, setFilteredData] = useState([])
   const [influencerNotScraped, setInfluencerNotScraped] = useState([])
   const [influencerNotFound, setInfluencerNotFound] = useState([])
+  const [expiringContractList, setExpiringContractList] = useState([])
+  const [expiredContractList, setExpiredContractList] = useState([])
   // ** Options For Filters
   const [tagOptions, setTagOptions] = useState([])
   const [regionOptions, setRegionOptions] = useState([])
@@ -174,6 +178,11 @@ const Home = () => {
           setFilterFollowerMaxIG(result.followerMaxIG)
           setFilterEngagementMaxIG(result.engagementMaxIG)
           setFilterSubscriberMaxYT(result.subscriberMaxYT)
+
+          // ** CONTRACT
+          // set state var for contract exprired or expiring in the next 90 days
+          setExpiredContractList(result.expiredContractList)
+          setExpiringContractList(result.expiringContractList)
 
           // ** SCRAPING
           // set state var for profiles not scraped or not found
@@ -452,6 +461,28 @@ const Home = () => {
           />
         </div>
       </Card>
+      {/** CONTRACT STATUS */}
+      <ContractStatus expiringContractList={expiringContractList} expiredContractList={expiredContractList} />
+      {/** ENABLE SOCIAL BOT SWITCH */}
+      <div style={{ marginBottom: "20px", float: "right", width: "100%" }}>
+        <div className="form-switch" style={{ textAlign: "right" }}>
+          <Input
+            type="switch"
+            checked={isSocialActive}
+            id="social_active"
+            onChange={async (e) => {
+              if (e.target.checked) {
+                setIsSocialActive(true)
+              } else {
+                setIsSocialActive(false)
+              }
+            }}
+          />
+          <span style={{ marginLeft: "10px", verticalAlign: "sub", fontSize: "16px" }}>
+            Attiva la raccolta automatica dati da Instagram e Youtube (BETA)
+          </span>
+        </div>
+      </div>
       {/** SCRAPING STATUS */}
       {isSocialActive == true && <ScrapingStatus influencerNotFound={influencerNotFound} influencerNotScraped={influencerNotScraped} />}
       {/** MODALI */}
