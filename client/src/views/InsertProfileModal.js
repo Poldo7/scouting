@@ -7,7 +7,8 @@ import themeConfig from "@configs/themeConfig"
 import ProfileForm from "./form/ProfileForm"
 
 const InsertProfileModal = (props) => {
-  const { isSocialActive, isOpen, setIsOpen, profilesArray, setProfilesArray, emptyProfileObject, regions, cities, tag, fetchProfiles } = props
+  const { isSocialActive, isOpen, setIsOpen, profilesArray, setProfilesArray, emptyProfileObject, regions, cities, tag, fetchProfiles, getTag } =
+    props
 
   const [active, setActive] = useState(2)
   const [scrapeStatus, setScrapeStatus] = useState("to-do") // ('to-do', 'running', 'success', 'error')
@@ -242,6 +243,7 @@ const InsertProfileModal = (props) => {
           empty.scrapeErrors = 0
           setProfilesArray(empty)
           fetchProfiles()
+          getTag()
           handleMessage("success", "Aggiornato", "Profili inseriti con successo!")
         } else {
           handleMessage("error", "Errore!", "Qualcosa è andato storto :(")

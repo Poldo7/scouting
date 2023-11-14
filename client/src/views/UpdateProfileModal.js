@@ -9,7 +9,7 @@ import ProfileForm from "./form/ProfileForm"
 import _ from "lodash"
 
 const UpdateProfileModal = (props) => {
-  const { isSocialActive, profile, profileCopy, setProfile, setProfileCopy, isOpen, setIsOpen, regions, cities, tag, fetchProfiles } = props
+  const { isSocialActive, profile, profileCopy, setProfile, setProfileCopy, isOpen, setIsOpen, regions, cities, tag, fetchProfiles, getTag } = props
 
   const [isInstagramToVerify, setIsInstagramToVerify] = useState(false)
   const [isYoutubeToVerify, setIsYoutubeToVerify] = useState(false)
@@ -90,6 +90,7 @@ const UpdateProfileModal = (props) => {
         if (res.data && res.data.status == "success") {
           setProfileCopy(profile)
           fetchProfiles()
+          getTag()
           handleMessage("success", "Aggiornato", "Profilo aggiornato con successo!")
         } else {
           handleMessage("error", "Errore!", "Qualcosa è andato storto :(")

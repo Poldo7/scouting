@@ -497,6 +497,7 @@ const Home = () => {
         cities={formCitiesList}
         tag={formTagList}
         fetchProfiles={fetchProfiles}
+        getTag={getTag}
       />
       <UpdateProfileModal
         isSocialActive={isSocialActive}
@@ -510,6 +511,7 @@ const Home = () => {
         cities={formCitiesList}
         tag={formTagList}
         fetchProfiles={fetchProfiles}
+        getTag={getTag}
       />
     </>
   )
