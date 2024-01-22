@@ -93,11 +93,11 @@ const UpdateProfileModal = (props) => {
           getTag()
           handleMessage("success", "Aggiornato", "Profilo aggiornato con successo!")
         } else {
-          handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
         }
       })
       .catch((err) => {
-        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+        handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
       })
   }
 
@@ -153,10 +153,11 @@ const UpdateProfileModal = (props) => {
             setIsInstagramToVerify(false)
             setOriginalUsernameIG(profile.username_ig)
             //aggiorna dati scrape del profilo
-            deep_copy.follower_ig = scrapeResult[0].follower
-            deep_copy.engagement_ig = scrapeResult[0].engagement
-            deep_copy.esito_ig = scrapeResult[0].esito
-            deep_copy.utente_trovato_ig = scrapeResult[0].esito
+            deep_copy.follower_ig = scrapeResult[0]?.follower || 0
+            deep_copy.engagement_ig = scrapeResult[0]?.engagement || 0
+            deep_copy.post_privati_ig = scrapeResult[0]?.post_privati || 0
+            deep_copy.esito_ig = scrapeResult[0]?.esito || 0
+            deep_copy.utente_trovato_ig = scrapeResult[0]?.utente_trovato || 0
           } else {
             // if instagram scrape failed
             console.log("verifica ig fallita")
@@ -170,7 +171,7 @@ const UpdateProfileModal = (props) => {
           setProfile(deep_copy)
         })
         .catch((err) => {
-          handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :/")
           console.log("CATCH: verifica ig fallita con errore", err)
           setIsWaitScrapeIG(false)
           deep_copy.scrapeErrors++
@@ -200,9 +201,9 @@ const UpdateProfileModal = (props) => {
             setIsYoutubeToVerify(false)
             setOriginalUsernameYT(profile.username_yt)
             //aggiorna dati scrape del profilo
-            deep_copy.iscritti_yt = scrapeResult[0].subscriber
-            deep_copy.esito_yt = scrapeResult[0].esito
-            deep_copy.utente_trovato_yt = scrapeResult[0].utente_trovato
+            deep_copy.iscritti_yt = scrapeResult[0]?.subscriber || 0
+            deep_copy.esito_yt = scrapeResult[0]?.esito || 0
+            deep_copy.utente_trovato_yt = scrapeResult[0]?.utente_trovato || 0
           } else {
             // if youtube scrape failed
             console.log("verifica yt fallita")
@@ -216,7 +217,7 @@ const UpdateProfileModal = (props) => {
           setProfile(deep_copy)
         })
         .catch((err) => {
-          handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :/")
           console.log("CATCH: verifica yt fallita con errore", err)
           setIsWaitScrapeYT(false)
           deep_copy.scrapeErrors++

@@ -193,12 +193,27 @@ const Home = () => {
           setData(result.profileList)
           setFilteredData(result.profileList)
         } else {
-          handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
         }
       })
       .catch((err) => {
-        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+        handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
       })
+  }
+
+  const scrapeAllProfiles = () => {
+    Swal.fire({
+      title: "Procedere con l'aggiornamento?",
+      text: "Non chiudere la pagina durante l'operazione. L'operazione si svolgerà in background e potrebbe impiegare diverso tempo",
+      icon: "info",
+      showCancelButton: true,
+      cancelButtonText: "Annulla",
+      confirmButtonText: "Aggiorna profili",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log("AGGIORNAMENTO DI TUTTI I PROFILI IN CORSO")
+      }
+    })
   }
 
   // ** Function for fecth region and cities
@@ -210,11 +225,11 @@ const Home = () => {
           setFormRegionsList(result.regioni)
           setFormCitiesList(result.citta)
         } else {
-          handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
         }
       })
       .catch((err) => {
-        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+        handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
       })
   }
 
@@ -226,11 +241,11 @@ const Home = () => {
           let result = res.data
           setFormTagList(result)
         } else {
-          handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
         }
       })
       .catch((err) => {
-        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+        handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
       })
   }
 
@@ -258,11 +273,11 @@ const Home = () => {
             setIsFilterOpen(false)
             handleMessage("success", "Eliminato!", 'Ci siamo "occupati" di @' + name + " ;)")
           } else {
-            handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+            handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
           }
         })
         .catch((err) => {
-          handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
         })
     } else if (result.dismiss === MySwal.DismissReason.cancel) {
       MySwal.fire({
@@ -483,6 +498,8 @@ const Home = () => {
           </span>
         </div>
       </div>
+      {/** SCRAPE ALL PROFILES BUTTON */}
+      {isSocialActive == true && <Button onClick={() => scrapeAllProfiles()}>Aggiorna dati social di tutti i profili</Button>}
       {/** SCRAPING STATUS */}
       {isSocialActive == true && <ScrapingStatus influencerNotFound={influencerNotFound} influencerNotScraped={influencerNotScraped} />}
       {/** MODALI */}

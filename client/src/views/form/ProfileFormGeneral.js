@@ -59,7 +59,7 @@ const ProfileFormGeneral = (props) => {
         }
       })
       .catch((err) => {
-        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+        handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
       })
   }
 

@@ -119,8 +119,9 @@ const InsertProfileModal = (props) => {
             if (deep_copy[i].username_ig && (deep_copy[i].username_ig != deep_copy[i].username_ig_verified || deep_copy[i].esito_ig == 0)) {
               deep_copy[i].esito_ig = scrapeResult[index]?.esito || 0
               deep_copy[i].utente_trovato_ig = scrapeResult[index]?.utente_trovato || 0
-              deep_copy[i].follower_ig = scrapeResult[index]?.follower
-              deep_copy[i].engagement_ig = scrapeResult[index]?.engagement
+              deep_copy[i].post_privati_ig = scrapeResult[index]?.post_privati || 0
+              deep_copy[i].follower_ig = scrapeResult[index]?.follower || 0
+              deep_copy[i].engagement_ig = scrapeResult[index]?.engagement || 0
               if (deep_copy[i].esito_ig == 1 && deep_copy[i].utente_trovato_ig == 1) deep_copy[i].username_ig_verified = deep_copy[i].username_ig
 
               index++
@@ -131,7 +132,7 @@ const InsertProfileModal = (props) => {
         })
         .catch((err) => {
           console.log("CATCH: verifica ig fallita", err)
-          handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :/")
           setIsWaitScrapeIG(false)
           deep_copy.scrapeErrors++
           setProfilesArray(deep_copy)
@@ -169,7 +170,7 @@ const InsertProfileModal = (props) => {
             if (deep_copy[i].username_yt && (deep_copy[i].username_yt != deep_copy[i].username_yt_verified || deep_copy[i].esito_yt == 0)) {
               deep_copy[i].esito_yt = scrapeResult[index]?.esito || 0
               deep_copy[i].utente_trovato_yt = scrapeResult[index]?.utente_trovato || 0
-              deep_copy[i].iscritti_yt = scrapeResult[index]?.subscriber
+              deep_copy[i].iscritti_yt = scrapeResult[index]?.subscriber || 0
               if (deep_copy[i].esito_yt == 1 && deep_copy[i].utente_trovato_yt == 1) deep_copy[i].username_yt_verified = deep_copy[i].username_yt
 
               index++
@@ -180,7 +181,7 @@ const InsertProfileModal = (props) => {
         })
         .catch((err) => {
           console.log("CATCH: verifica yt fallita", err)
-          handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :/")
           setIsWaitScrapeYT(false)
           deep_copy.scrapeErrors++
           setProfilesArray(deep_copy)
@@ -246,12 +247,12 @@ const InsertProfileModal = (props) => {
           getTag()
           handleMessage("success", "Aggiornato", "Profili inseriti con successo!")
         } else {
-          handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+          handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
         }
       })
       .catch((err) => {
         console.log(err)
-        handleMessage("error", "Errore!", "Qualcosa è andato storto :(")
+        handleMessage("error", "Errore!", "Qualcosa è andato storto :/")
       })
   }
 
