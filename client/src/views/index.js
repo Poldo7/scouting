@@ -240,69 +240,18 @@ const Home = () => {
           timer: 5000,
         })
 
-        let isWaitScrapeIG = false,
-          isWaitScrapeYT = false
-
-        //check profile and start ig scrape
-        if (profileToScrapeIG.length > 0) {
-          isWaitScrapeIG = true
-          console.log("start scrape ig")
-
-          await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: profileToScrapeIG })
-            .then(async (res) => {
-              console.log("scrape ig done")
-              console.log(res.data)
-              isWaitScrapeIG = false
-              let scrapeResult = res.data?.scrapeResult
-              let status = res.data?.status
-              //if youtube scrape has finished
-              if (!isWaitScrapeYT && status === "success")
-                handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
-              // if instagram scrape failed
-              if (status === "warning" || status === "error") {
-                console.log("verifica ig fallita")
-                handleMessage("error", "Errore nella verifica di alcuni profili Instagram!")
-              }
-
-              //filter profile correctly scraped
-              let profileScraped = scrapeResult.filter((r) => r.esito == 1)
-              console.log("Profili scraped con successo: ", profileScraped)
-              //update database with scrape result
-              await Axios.post(themeConfig.app.serverUrl + "insertSocialDataIG", { influencer_data: profileScraped })
-                .then((res2) => {
-                  console.log("insert ig social data done")
-                  console.log(res2.data)
-                  //update all the data
-                  fetchProfiles()
-                  console.log("profile fetched")
-                })
-                .catch((err) => {
-                  console.log("CATCH: aggiornamento db ig fallito", err)
-                  handleMessage("error", "Errore nell'aggiornamento del database!!", "Qualcosa è andato storto :/")
-                })
-            })
-            .catch((err) => {
-              console.log("CATCH: verifica ig fallita", err)
-              handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :/")
-              isWaitScrapeIG = false
-            })
-        }
-
-        //check profile and start yt scrape
-        if (profileToScrapeYT.length > 0) {
-          isWaitScrapeYT = true
+        //nested fuction: start yt scrape (to call after ig scraped was completed)
+        var scrapeExpired_YT = async function () {
           console.log("start scrape yt")
 
           await Axios.post(themeConfig.app.serverUrl + "scrapeYT", { profileList: profileToScrapeYT })
             .then(async (res) => {
               console.log("scrape yt done")
               console.log(res.data)
-              isWaitScrapeYT = false
               let scrapeResult = res.data?.scrapeResult
               let status = res.data?.status
-              //if instagram scrape has finished
-              if (!isWaitScrapeIG && status === "success")
-                handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
+
+              if (status === "success") handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
               // if youtube scrape failed
               if (status === "warning" || status === "error") {
                 console.log("verifica yt fallita")
@@ -329,9 +278,50 @@ const Home = () => {
             .catch((err) => {
               console.log("CATCH: verifica yt fallita", err)
               handleMessage("error", "Errore nella verifica Youtube!!", "Qualcosa è andato storto :/")
-              isWaitScrapeYT = false
             })
         }
+
+        //check profile and start ig scrape
+        if (profileToScrapeIG.length > 0) {
+          console.log("start scrape ig")
+
+          await Axios.post(themeConfig.app.serverUrl + "scrapeIG", { profileList: profileToScrapeIG })
+            .then(async (res) => {
+              console.log("scrape ig done")
+              console.log(res.data)
+              let scrapeResult = res.data?.scrapeResult
+              let status = res.data?.status
+              // if instagram scrape failed
+              if (status === "warning" || status === "error") {
+                console.log("verifica ig fallita")
+                handleMessage("error", "Errore nella verifica di alcuni profili Instagram!")
+              }
+              //if there are youtube profile to scrape continue
+              if (profileToScrapeYT.length > 0) scrapeExpired_YT()
+              else handleMessage("success", "Verifica social completata!", "Controlla che i dati raccolti siano corretti")
+
+              //filter profile correctly scraped
+              let profileScraped = scrapeResult.filter((r) => r.esito == 1)
+              console.log("Profili scraped con successo: ", profileScraped)
+              //update database with scrape result
+              await Axios.post(themeConfig.app.serverUrl + "insertSocialDataIG", { influencer_data: profileScraped })
+                .then((res2) => {
+                  console.log("insert ig social data done")
+                  console.log(res2.data)
+                  //update all the data
+                  fetchProfiles()
+                  console.log("profile fetched")
+                })
+                .catch((err) => {
+                  console.log("CATCH: aggiornamento db ig fallito", err)
+                  handleMessage("error", "Errore nell'aggiornamento del database!!", "Qualcosa è andato storto :/")
+                })
+            })
+            .catch((err) => {
+              console.log("CATCH: verifica ig fallita", err)
+              handleMessage("error", "Errore nella verifica Instagram!!", "Qualcosa è andato storto :/")
+            })
+        } else if (profileToScrapeYT.length > 0) scrapeExpired_YT()
       }
     })
   }
