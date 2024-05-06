@@ -6,13 +6,13 @@ const ContractStatus = (props) => {
   const { expiringContractList, expiredContractList } = props
 
   return (
-    <Row>
+    <>
       {expiringContractList.length > 0 && (
         <Col sm="12" md="6">
           <Card color="warning" inverse>
             <CardBody>
               <CardTitle className="text-white" tag="h4" style={{ marginBottom: "10px" }}>
-                <u>Contratti in scadenza nei prossimi 90 giorni</u>
+                <u>Contratti in scadenza nei prossimi 90 giorni ⏱️</u>
               </CardTitle>
               <span style={{ fontSize: "15px" }}>
                 <ul className="list-style-icons" style={{ marginTop: "15px" }}>
@@ -34,7 +34,7 @@ const ContractStatus = (props) => {
           <Card color="danger" inverse>
             <CardBody>
               <CardTitle className="text-white" tag="h4" style={{ marginBottom: "10px" }}>
-                <u>Contratti scaduti</u>
+                <u>Contratti scaduti ✍️</u>
               </CardTitle>
               <span style={{ fontSize: "15px" }}>
                 Aggiungi una nuova data scadenza del contratto, o contrassegnali come non più in Domini
@@ -53,7 +53,7 @@ const ContractStatus = (props) => {
           </Card>
         </Col>
       )}
-    </Row>
+    </>
   )
 }
 

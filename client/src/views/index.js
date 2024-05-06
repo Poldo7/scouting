@@ -2,7 +2,7 @@ import themeConfig from "@configs/themeConfig"
 import Axios from "axios"
 import React, { useEffect, useState } from "react"
 import { ChevronDown, Edit, Filter, MinusCircle, Plus, RotateCw, Trash, User } from "react-feather"
-import { Button, Card, CardHeader, Input, CardTitle } from "reactstrap"
+import { Button, Card, CardHeader, Input, CardTitle, Row } from "reactstrap"
 // ** Table columns & Expandable Data
 import { columns, ExpandableTable } from "./tableElement"
 
@@ -16,6 +16,7 @@ import withReactContent from "sweetalert2-react-content"
 import Filters from "./Filters"
 import ScrapingStatus from "./ScrapingStatus"
 import ContractStatus from "./ContractStatus"
+import BirthdayStatus from "./BirthdayStatus"
 import InsertProfileModal from "./InsertProfileModal"
 import UpdateProfileModal from "./UpdateProfileModal"
 
@@ -34,6 +35,7 @@ const Home = () => {
   const [influencerNotScraped, setInfluencerNotScraped] = useState([])
   const [influencerNotFound, setInfluencerNotFound] = useState([])
   const [expiringContractList, setExpiringContractList] = useState([])
+  const [birthdaysList, setBirthdaysList] = useState([])
   const [expiredContractList, setExpiredContractList] = useState([])
   // ** Options For Filters
   const [tagOptions, setTagOptions] = useState([])
@@ -66,6 +68,7 @@ const Home = () => {
     interessiArray: [],
     nome: "",
     eta: "",
+    data_nascita: null,
     fee: "",
     note: "",
     stato: null,
@@ -183,6 +186,10 @@ const Home = () => {
           // set state var for contract exprired or expiring in the next 90 days
           setExpiredContractList(result.expiredContractList)
           setExpiringContractList(result.expiringContractList)
+
+          // ** BIRTHDAY
+          // set upcoming birthdays for the next 30 days
+          setBirthdaysList(result.birthdaysList)
 
           // ** SCRAPING
           // set state var for profiles not scraped or not found
@@ -581,8 +588,12 @@ const Home = () => {
           />
         </div>
       </Card>
-      {/** CONTRACT STATUS */}
-      <ContractStatus expiringContractList={expiringContractList} expiredContractList={expiredContractList} />
+      <Row>
+        {/** CONTRACT STATUS */}
+        <ContractStatus expiringContractList={expiringContractList} expiredContractList={expiredContractList} />
+        {/** UPCOMING BIRTHDAYS */}
+        <BirthdayStatus birthdaysList={birthdaysList} />
+      </Row>
       {/** ENABLE SOCIAL BOT SWITCH */}
       <div style={{ marginBottom: "20px", float: "right", width: "100%" }}>
         <div className="form-switch" style={{ textAlign: "right" }}>

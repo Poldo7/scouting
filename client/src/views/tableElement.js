@@ -183,7 +183,10 @@ export const ExpandableTable = ({ data }) => {
             <Avatar color="light-primary" className="rounded me-1" icon={<Calendar size={18} />} />
             <div>
               <h6 className="mb-0">Età</h6>
-              <small>{data.eta ? data.eta + " anni" : <span className="text-secondary">?</span>}</small>
+              <small>
+                {data.eta ? data.eta + " anni" : <span className="text-secondary">?</span>}{" "}
+                {data.data_nascita_format && "(" + data.data_nascita_format + ")"}
+              </small>
             </div>
           </div>
           <div className="d-flex mb-1">

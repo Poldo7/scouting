@@ -32,6 +32,7 @@ const ProfileFormGeneral = (props) => {
   const [regioniValue, setRegioniValue] = useState(null)
   const [cittaValue, setCittaValue] = useState(null)
   const [scadenzaContratto, setScadenzaContratto] = useState(null)
+  const [dataNascita, setDataNascita] = useState(null)
 
   // ** in case of multiple forms (insert mode)
   //      =>  we must set multi-selects values only when we select this specific tab (there can be more than one), otherwise multi-selects crash
@@ -41,6 +42,7 @@ const ProfileFormGeneral = (props) => {
       setRegioniValue(profile.regioniArray)
       setCittaValue(profile.cittaArray)
       setScadenzaContratto(profile.scadenza_contratto)
+      setDataNascita(profile.data_nascita)
     }
   }, [activeTab])
 
@@ -266,23 +268,51 @@ const ProfileFormGeneral = (props) => {
             <label htmlFor="floatingInput">Nome</label>
           </div>
         </Col>
-        <Col md="6" className="mb-2">
-          <div className="form-floating">
-            <Cleave
+        <Col md="6">
+          <div>
+            <Flatpickr
               className="form-control"
-              placeholder="Età"
-              options={{ delimiter: "~", blocks: [2, 2] }}
-              id="eta"
-              value={profile.eta}
-              onChange={(e) => {
+              value={dataNascita}
+              placeholder="Data di nascita"
+              onChange={(value) => {
+                console.log(value)
                 let deep_copy = JSON.parse(JSON.stringify(profile))
-                deep_copy.eta = e.target.value
+                deep_copy.data_nascita = value
+                console.log("nascita: " + value)
+                setDataNascita(value)
                 setProfile(deep_copy)
               }}
+              options={{
+                altInput: true,
+                altFormat: "j F, Y",
+                dateFormat: "d-m-Y",
+                locale: {
+                  ...Italian,
+                },
+              }}
+              id={"nascita_" + tabId}
             />
-            <label htmlFor="floatingInput">Età</label>
           </div>
         </Col>
+        {(!profile.data_nascita || profile.data_nascita.length == 0) && (
+          <Col md="6" className="mb-2">
+            <div className="form-floating">
+              <Cleave
+                className="form-control"
+                placeholder="Età"
+                options={{ delimiter: "~", blocks: [2, 2] }}
+                id="eta"
+                value={profile.eta}
+                onChange={(e) => {
+                  let deep_copy = JSON.parse(JSON.stringify(profile))
+                  deep_copy.eta = e.target.value
+                  setProfile(deep_copy)
+                }}
+              />
+              <label htmlFor="floatingInput">Età</label>
+            </div>
+          </Col>
+        )}
         <Col md="6" className="mb-2">
           <div className="form-floating">
             <Select

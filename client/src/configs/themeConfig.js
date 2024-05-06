@@ -40,7 +40,7 @@ if (process.env.NODE_ENV == "production") {
 } else {
   themeConfig.app.baseUrl = "http://localhost/scouting/client/"
   themeConfig.app.clientUrl = "https://localhost:3000/"
-  themeConfig.app.serverUrl = "http://localhost:8081/"
+  themeConfig.app.serverUrl = "http://localhost:3001/"
 }
 
 export default themeConfig
