@@ -112,7 +112,6 @@ export const columns = [
       </div>
     ),
   },
-
   {
     name: (
       <center>
@@ -126,6 +125,26 @@ export const columns = [
       <div className="d-flex align-items-center cursor-initial">
         <div className="user-info text-truncate ms-1">
           <Badge className="background-purple font-12px">{row.engagement_ig ? row.engagement_ig + "%" : <span>-</span>}</Badge>
+        </div>
+      </div>
+    ),
+  },
+  {
+    name: "Grado",
+    sortable: true,
+    selector: (row) => row.grado,
+    cell: (row) => (
+      <div className="d-flex align-items-center cursor-initial">
+        <div className="user-info text-truncate">
+          {row.grado == null ? (
+            <Badge color="light-secondary">x</Badge>
+          ) : row.grado == "A" ? (
+            <Badge color="light-success">A</Badge>
+          ) : row.grado == "B" ? (
+            <Badge color="light-warning">B</Badge>
+          ) : (
+            <Badge color="light-danger">C</Badge>
+          )}
         </div>
       </div>
     ),

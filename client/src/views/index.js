@@ -72,6 +72,7 @@ const Home = () => {
     fee: "",
     note: "",
     stato: null,
+    grado: null,
     nome_agenzia: "",
     regioniArray: [],
     cittaArray: [],
@@ -117,6 +118,12 @@ const Home = () => {
                   profile.cittaArray = profile.citta.split(", ")
                   profile.cittaArray = profile.cittaArray.map((el) => ({ value: el, label: el }))
                 } else profile.cittaArray = []
+                if (profile.grado) {
+                  profile.gradoOption = {
+                    value: profile.grado,
+                    label: profile.grado,
+                  }
+                }
                 profile.statoOption = {
                   value: profile.stato,
                   label: profile.stato == 2 ? "In domini" : profile.stato == 1 ? "Con agenzia" : "Senza agenzia",

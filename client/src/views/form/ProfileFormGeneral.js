@@ -146,7 +146,33 @@ const ProfileFormGeneral = (props) => {
             <label htmlFor="floatingInput">Fee (%) *</label>
           </div>
         </Col>
-        <Col md="12">
+        <Col md="6" className="mb-2">
+          <Label className="form-label gray-label" for="grado">
+            Grado
+          </Label>
+          <Select
+            theme={selectThemeColors}
+            closeMenuOnSelect={false}
+            components={animatedComponents}
+            value={profile.gradoOption}
+            onChange={(el) => {
+              let deep_copy = JSON.parse(JSON.stringify(profile))
+              deep_copy.grado = el.value
+              deep_copy.gradoOption = el
+              setProfile(deep_copy)
+            }}
+            options={[
+              { value: "A", label: "A" },
+              { value: "B", label: "B" },
+              { value: "C", label: "C" },
+            ]}
+            className="react-select"
+            classNamePrefix="select"
+            placeholder="Non assegnato"
+            id="grado"
+          />
+        </Col>
+        <Col md="6">
           {profile.statoOption?.label == "In domini" && (
             <div className="mb-2">
               <Label className="form-label gray-label" for="interessi">
@@ -175,7 +201,7 @@ const ProfileFormGeneral = (props) => {
             </div>
           )}
           {profile.statoOption?.label == "Con agenzia" && (
-            <div className="form-floating mb-2">
+            <div className="form-floating mb-2 mt-2">
               <Input
                 type="text"
                 id="floatingInput"
