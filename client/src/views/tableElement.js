@@ -137,7 +137,7 @@ export const columns = [
       <div className="d-flex align-items-center cursor-initial">
         <div className="user-info text-truncate">
           {row.grado == null ? (
-            <Badge color="light-secondary">x</Badge>
+            <Badge color="light-secondary">-</Badge>
           ) : row.grado == "A" ? (
             <Badge color="light-success">A</Badge>
           ) : row.grado == "B" ? (
