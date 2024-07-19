@@ -143,9 +143,9 @@ export const columns = [
           ) : row.grado == "B" ? (
             <Badge color="light-success">B</Badge>
           ) : row.grado == "C" ? (
-            <Badge color="light-danger">C</Badge>
+            <Badge color="light-warning">C</Badge>
           ) : (
-            <Badge color="light-warning">D</Badge>
+            <Badge color="light-danger">D</Badge>
           )}
         </div>
       </div>
