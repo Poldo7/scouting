@@ -141,9 +141,11 @@ export const columns = [
           ) : row.grado == "A" ? (
             <Badge color="light-success">A</Badge>
           ) : row.grado == "B" ? (
-            <Badge color="light-warning">B</Badge>
-          ) : (
+            <Badge color="light-success">B</Badge>
+          ) : row.grado == "C" ? (
             <Badge color="light-danger">C</Badge>
+          ) : (
+            <Badge color="light-warning">D</Badge>
           )}
         </div>
       </div>

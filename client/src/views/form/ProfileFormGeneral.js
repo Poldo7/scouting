@@ -165,6 +165,7 @@ const ProfileFormGeneral = (props) => {
               { value: "A", label: "A" },
               { value: "B", label: "B" },
               { value: "C", label: "C" },
+              { value: "D", label: "D" },
               { value: null, label: "Non assegnato" },
             ]}
             className="react-select"
